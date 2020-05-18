@@ -38,7 +38,7 @@ class QueryTasksByWorkbasketAccTest extends AbstractAccTest {
             .createTaskQuery()
             .workbasketKeyDomainIn(workbasketIdentifiers.toArray(new KeyDomain[0]))
             .list();
-    assertThat(results).hasSize(52);
+    assertThat(results).hasSize(55);
 
     String[] ids =
         results.stream()
@@ -47,7 +47,7 @@ class QueryTasksByWorkbasketAccTest extends AbstractAccTest {
             .toArray(new String[0]);
 
     List<TaskSummary> result2 = taskService.createTaskQuery().workbasketIdIn(ids).list();
-    assertThat(result2).hasSize(52);
+    assertThat(result2).hasSize(59);
   }
 
   @WithAccessId(user = "user-1-1", groups = "group-1")

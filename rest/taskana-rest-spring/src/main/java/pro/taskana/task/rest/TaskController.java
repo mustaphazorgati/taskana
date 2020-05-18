@@ -4,9 +4,11 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.PagedModel.PageMetadata;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
@@ -25,11 +27,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import pro.taskana.classification.api.exceptions.ClassificationNotFoundException;
 import pro.taskana.common.api.BaseQuery.SortDirection;
+import pro.taskana.common.api.BulkOperationResults;
 import pro.taskana.common.api.KeyDomain;
 import pro.taskana.common.api.TimeInterval;
 import pro.taskana.common.api.exceptions.ConcurrencyException;
 import pro.taskana.common.api.exceptions.InvalidArgumentException;
 import pro.taskana.common.api.exceptions.NotAuthorizedException;
+import pro.taskana.common.api.exceptions.TaskanaException;
 import pro.taskana.common.rest.AbstractPagingController;
 import pro.taskana.common.rest.Mapping;
 import pro.taskana.common.rest.models.TaskanaPagedModel;
@@ -68,6 +72,7 @@ public class TaskController extends AbstractPagingController {
   private static final String OWNER = "owner";
   private static final String OWNER_LIKE = "owner-like";
   private static final String DOMAIN = "domain";
+  private static final String TASK_ID = "task-id";
   private static final String WORKBASKET_ID = "workbasket-id";
   private static final String WORKBASKET_KEY = "workbasket-key";
   private static final String CLASSIFICATION_KEY = "classification.key";
@@ -85,6 +90,7 @@ public class TaskController extends AbstractPagingController {
   private static final String EXTERNAL_ID = "external-id";
   private static final String WILDCARD_SEARCH_VALUE = "wildcard-search-value";
   private static final String WILDCARD_SEARCH_FIELDS = "wildcard-search-fields";
+  private static final String CUSTOM = "custom";
 
   private static final String SORT_BY = "sort-by";
   private static final String SORT_DIRECTION = "order";
@@ -128,6 +134,41 @@ public class TaskController extends AbstractPagingController {
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("Exit from getTasks(), returning {}", response);
     }
+
+    return response;
+  }
+
+  @DeleteMapping(path = Mapping.URL_TASKS)
+  @Transactional(readOnly = true, rollbackFor = Exception.class)
+  public ResponseEntity<CollectionModel<TaskSummaryRepresentationModel>> deleteTasks(
+      @RequestParam MultiValueMap<String, String> params)
+      throws InvalidArgumentException, NotAuthorizedException {
+
+    LOGGER.debug("Entry to deleteTasks(params= {})", params);
+
+    TaskQuery query = taskService.createTaskQuery();
+    query = applyFilterParams(query, params);
+    validateNoInvalidParameterIsLeft(params);
+
+    List<TaskSummary> taskSummaries = getQueryList(query, null);
+
+    List<String> taskIdsToDelete =
+        taskSummaries.stream().map(TaskSummary::getId).collect(Collectors.toList());
+
+    BulkOperationResults<String, TaskanaException> result =
+        taskService.deleteTasks(taskIdsToDelete);
+
+    List<TaskSummary> successfullyDeletedTaskSummaries =
+        taskSummaries.stream()
+            .filter(summary -> !result.getFailedIds().contains(summary.getId()))
+            .collect(Collectors.toList());
+
+    ResponseEntity<CollectionModel<TaskSummaryRepresentationModel>> response =
+        ResponseEntity.ok(
+            taskSummaryRepresentationModelAssembler.toCollectionModel(
+                successfullyDeletedTaskSummaries));
+
+    LOGGER.debug("Exit from deleteTasks(), returning {}", response);
 
     return response;
   }
@@ -318,6 +359,11 @@ public class TaskController extends AbstractPagingController {
       taskQuery.classificationKeyIn(classificationKeys);
       params.remove(CLASSIFICATION_KEY);
     }
+    if (params.containsKey(TASK_ID)) {
+      String[] taskIds = extractCommaSeparatedFields(params.get(TASK_ID));
+      taskQuery.idIn(taskIds);
+      params.remove(TASK_ID);
+    }
     if (params.containsKey(WORKBASKET_ID)) {
       String[] workbaskets = extractCommaSeparatedFields(params.get(WORKBASKET_ID));
       taskQuery.workbasketIdIn(workbaskets);
@@ -412,6 +458,13 @@ public class TaskController extends AbstractPagingController {
       String[] externalIds = extractCommaSeparatedFields(params.get(EXTERNAL_ID));
       taskQuery.externalIdIn(externalIds);
       params.remove(EXTERNAL_ID);
+    }
+
+    for (int i = 1; i < 17; i++) {
+      if (params.containsKey(CUSTOM + i)) {
+        taskQuery.customAttributeIn(String.valueOf(i), params.get(CUSTOM + i).get(0));
+        params.remove(CUSTOM + i);
+      }
     }
 
     if (LOGGER.isDebugEnabled()) {
