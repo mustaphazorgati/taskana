@@ -136,7 +136,7 @@ export class ClassificationDetailsComponent implements OnInit, OnDestroy {
 
   onCopy() {
     this.store.dispatch(new SetActiveAction(ACTION.COPY));
-    this.classification.key = '';
+    this.classification.key = null;
   }
 
   selectCategory(category: string) {
