@@ -20,7 +20,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 @Inherited
 @ActiveProfiles({"test"})
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(
     classes = RestConfiguration.class,
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

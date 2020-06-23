@@ -5,7 +5,6 @@ import { Observable, Subject } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 
 import { Classification } from 'app/shared/models/classification';
-import { ClassificationDefinition } from 'app/shared/models/classification-definition';
 
 import { ClassificationResource } from 'app/shared/models/classification-resource';
 import { DomainService } from 'app/shared/services/domain/domain.service';
@@ -25,11 +24,12 @@ export class ClassificationsService {
     private domainService: DomainService,
   ) {}
 
-  private static classificationParameters(domain: string): QueryParameters {
+  private static classificationParameters(domain: string, type?: string): QueryParameters {
     const parameters = new QueryParameters();
     parameters.SORTBY = TaskanaQueryParameters.parameters.KEY;
     parameters.SORTDIRECTION = Direction.ASC;
     parameters.DOMAIN = domain;
+    parameters.TYPE = type;
     delete TaskanaQueryParameters.page;
     delete TaskanaQueryParameters.pageSize;
 
@@ -37,11 +37,13 @@ export class ClassificationsService {
   }
 
   // GET
-  getClassifications(classificationType?: string): Observable<Array<Classification>> {
+  getClassifications(classificationType?: string): Observable<ClassificationResource> {
     return this.domainService.getSelectedDomain().pipe(
-      mergeMap(domain => this.getClassificationObservable(this.httpClient.get<ClassificationResource>(
-        `${this.url}${TaskanaQueryParameters.getQueryParameters(ClassificationsService.classificationParameters(domain))}`
-      ), classificationType)),
+      mergeMap(domain => this.httpClient.get<ClassificationResource>(
+        `${this.url}${TaskanaQueryParameters.getQueryParameters(
+          ClassificationsService.classificationParameters(domain, classificationType)
+        )}`
+      )),
       tap(() => {
         this.domainService.domainChangedComplete();
       })
@@ -60,8 +62,8 @@ export class ClassificationsService {
   }
 
   // GET
-  getClassification(id: string): Observable<ClassificationDefinition> {
-    return this.httpClient.get<ClassificationDefinition>(`${this.url}${id}`);
+  getClassification(id: string): Observable<Classification> {
+    return this.httpClient.get<Classification>(`${this.url}${id}`);
   }
 
   // POST

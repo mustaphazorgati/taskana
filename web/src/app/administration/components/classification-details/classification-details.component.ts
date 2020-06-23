@@ -1,8 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Select, Store } from '@ngxs/store';
-import { Observable, Subject, zip } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
-import { ClassificationDefinition, customFieldCount } from 'app/shared/models/classification-definition';
 import { ACTION } from 'app/shared/models/action';
 
 import { highlight } from 'theme/animations/validation.animation';
@@ -24,6 +23,9 @@ import { NotificationService } from '../../../shared/services/notifications/noti
 import { ClassificationCategoryImages,
   CustomField,
   getCustomFields } from '../../../shared/models/customisation';
+import { Classification } from '../../../shared/models/classification';
+import { customFieldCount } from '../../../shared/models/classification-summary';
+import { CategoriesResponse } from '../../../shared/services/classification-categories/classification-categories.service';
 
 import { CreateClassification,
   RemoveSelectedClassification,
@@ -38,14 +40,14 @@ import { CreateClassification,
   styleUrls: ['./classification-details.component.scss']
 })
 export class ClassificationDetailsComponent implements OnInit, OnDestroy {
-  classification: ClassificationDefinition;
+  classification: Classification;
   badgeMessage = '';
   requestInProgress = false;
   @Select(ClassificationSelectors.selectCategories) categories$: Observable<string[]>;
   @Select(EngineConfigurationSelectors.selectCategoryIcons) categoryIcons$: Observable<ClassificationCategoryImages>;
   @Select(ClassificationSelectors.selectedClassificationType) selectedClassificationType$: Observable<string>;
-  @Select(ClassificationSelectors.selectClassificationTypesObject) classificationTypes$: Observable<Object>;
-  @Select(ClassificationSelectors.selectedClassification) selectedClassification$: Observable<ClassificationDefinition>;
+  @Select(ClassificationSelectors.selectClassificationTypesObject) classificationTypes$: Observable<CategoriesResponse>;
+  @Select(ClassificationSelectors.selectedClassification) selectedClassification$: Observable<Classification>;
   @Select(ClassificationSelectors.activeAction) action$: Observable<ACTION>;
 
   spinnerIsRunning = false;
@@ -97,11 +99,6 @@ export class ClassificationDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-
-  backClicked(): void {
-    this.location.go(this.location.path().replace(/(classifications).*/g, 'classifications'));
-  }
-
   removeClassification() {
     this.notificationsService.showDialog(`You are going to delete classification: ${this.classification.key}. Can you confirm this action?`,
       this.removeClassificationConfirmation.bind(this));
@@ -123,7 +120,7 @@ export class ClassificationDetailsComponent implements OnInit, OnDestroy {
   onRestore() {
     this.formsValidatorService.formSubmitAttempt = false;
     if (this.action === ACTION.CREATE) {
-      this.classification = new ClassificationDefinition();
+      this.classification = {};
       this.notificationsService.showToast(NOTIFICATION_TYPES.INFO_ALERT);
     } else {
       this.store.dispatch(
@@ -212,7 +209,7 @@ export class ClassificationDetailsComponent implements OnInit, OnDestroy {
     return this.action === ACTION.CREATE && !!this.classification;
   }
 
-  private fillClassificationInformation(classificationSelected: ClassificationDefinition) {
+  private fillClassificationInformation(classificationSelected: Classification) {
     this.classification = { ...classificationSelected };
     if (this.action === ACTION.COPY) {
       this.classification.key = null;

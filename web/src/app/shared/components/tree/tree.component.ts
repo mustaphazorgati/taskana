@@ -7,7 +7,7 @@ import { TreeNodeModel } from 'app/shared/models/tree-node';
 import { ITreeOptions, KEYS, TREE_ACTIONS, TreeComponent } from 'angular-tree-component';
 import { Pair } from 'app/shared/models/pair';
 import { Observable, Subject, combineLatest } from 'rxjs';
-import { map, takeUntil, filter, tap } from 'rxjs/operators';
+import { map, takeUntil, filter } from 'rxjs/operators';
 import { Select, Store } from '@ngxs/store';
 import { EngineConfigurationSelectors } from 'app/shared/store/engine-configuration-store/engine-configuration.selectors';
 
@@ -15,7 +15,6 @@ import { Location } from '@angular/common';
 import { NOTIFICATION_TYPES } from 'app/shared/models/notifications';
 import { NotificationService } from 'app/shared/services/notifications/notification.service';
 import { Classification } from '../../models/classification';
-import { ClassificationDefinition } from '../../models/classification-definition';
 import { ClassificationsService } from '../../services/classifications/classifications.service';
 import { ClassificationCategoryImages } from '../../models/customisation';
 import { ClassificationSelectors } from '../../store/classification-store/classification.selectors';
@@ -23,6 +22,7 @@ import { DeselectClassification,
   SelectClassification,
   UpdateClassification } from '../../store/classification-store/classification.actions';
 import { ACTION } from '../../models/action';
+import { ClassificationTreeService } from '../../services/classification-tree/classification-tree.service';
 
 @Component({
   selector: 'taskana-tree',
@@ -31,6 +31,7 @@ import { ACTION } from '../../models/action';
 })
 export class TaskanaTreeComponent implements OnInit, AfterViewChecked, OnDestroy {
   classifications: TreeNodeModel[];
+
   @Input() selectNodeId: string;
   @Input() filterText: string;
   @Input() filterIcon = '';
@@ -38,7 +39,7 @@ export class TaskanaTreeComponent implements OnInit, AfterViewChecked, OnDestroy
   @Select(EngineConfigurationSelectors.selectCategoryIcons) categoryIcons$: Observable<ClassificationCategoryImages>;
   @Select(ClassificationSelectors.selectedClassificationId) selectedClassificationId$: Observable<string>;
   @Select(ClassificationSelectors.activeAction) activeAction$: Observable<ACTION>;
-  @Select(ClassificationSelectors.classifications) classifications$: Observable<TreeNodeModel[]>;
+  @Select(ClassificationSelectors.classifications) classifications$: Observable<Classification[]>;
   @Select(ClassificationSelectors.selectedClassificationType) classificationTypeSelected$: Observable<string>;
 
   options: ITreeOptions = {
@@ -70,6 +71,7 @@ export class TaskanaTreeComponent implements OnInit, AfterViewChecked, OnDestroy
     private location: Location,
     private store: Store,
     private notificationsService: NotificationService,
+    private classificationTreeService: ClassificationTreeService
   ) {
   }
 
@@ -87,7 +89,7 @@ export class TaskanaTreeComponent implements OnInit, AfterViewChecked, OnDestroy
 
     const classificationCopy$: Observable<TreeNodeModel[]> = this.classifications$.pipe(
       filter(classifications => typeof (classifications) !== 'undefined'),
-      map(classifications => classifications.map(c => this.classificationsDeepCopy(c)))
+      map(classifications => this.classificationTreeService.transformToTreeNode(classifications))
     );
 
     combineLatest(this.selectedClassificationId$, classificationCopy$).pipe(takeUntil(this.destroy$))
@@ -228,7 +230,7 @@ export class TaskanaTreeComponent implements OnInit, AfterViewChecked, OnDestroy
             || event.target.localName === 'taskana-tree');
   }
 
-  private getClassification(classificationId: string): Promise<ClassificationDefinition> {
+  private getClassification(classificationId: string): Promise<Classification> {
     return this.classificationsService.getClassification(classificationId).toPromise();
   }
 

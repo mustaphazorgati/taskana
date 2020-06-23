@@ -8,10 +8,6 @@ import { configureTests } from 'app/app.test.configuration';
 import { NgxsModule, Store } from '@ngxs/store';
 import { Location } from '@angular/common';
 
-
-import { ClassificationDefinition } from 'app/shared/models/classification-definition';
-import { LinksClassification } from 'app/shared/models/links-classfication';
-
 import { MasterAndDetailService } from 'app/shared/services/master-and-detail/master-and-detail.service';
 import { RequestInProgressService } from 'app/shared/services/request-in-progress/request-in-progress.service';
 import { ClassificationsService } from 'app/shared/services/classifications/classifications.service';
@@ -33,10 +29,9 @@ class DummyDetailComponent {
 describe('ClassificationDetailsComponent', () => {
   let component: ClassificationDetailsComponent;
   let fixture: ComponentFixture<ClassificationDetailsComponent>;
-  const treeNodes: Array<TreeNodeModel> = new Array(new TreeNodeModel());
+  const treeNodes: TreeNodeModel[] = []
 
   let classificationsService;
-  let removeConfirmationService;
 
   const locationSpy: jasmine.SpyObj<Location> = jasmine.createSpyObj('Location', ['go']);
   const storeSpy: jasmine.SpyObj<Store> = jasmine.createSpyObj('Store', ['select', 'dispatch']);
@@ -97,7 +92,7 @@ describe('ClassificationDetailsComponent', () => {
         modified: '2020-06-22T12:51:31.164Z',
         description: 'Beratungsprotokoll'
       };
-      component.classification._links = new LinksClassification({ self: '' });
+      component.classification._links = {};
       fixture.detectChanges();
       done();
     });

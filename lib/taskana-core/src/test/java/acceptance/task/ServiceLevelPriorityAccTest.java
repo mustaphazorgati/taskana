@@ -352,7 +352,7 @@ public class ServiceLevelPriorityAccTest extends AbstractAccTest {
     assertThat(results.containsErrors()).isTrue();
     assertThat(results.getErrorMap())
         .hasSize(3)
-        .containsKeys(toArray(taskIds))
+        .containsOnlyKeys(taskIds)
         .extractingFromEntries(Entry::getValue)
         .hasOnlyElementsOfType(NotAuthorizedException.class);
   }

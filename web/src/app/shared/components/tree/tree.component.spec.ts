@@ -12,8 +12,6 @@ import { TreeNodeModel } from 'app/shared/models/tree-node';
 import { Location } from '@angular/common';
 import { UpdateClassification } from 'app/shared/store/classification-store/classification.actions';
 import { TaskanaTreeComponent } from './tree.component';
-import { ClassificationDefinition } from '../../models/classification-definition';
-import { LinksClassification } from '../../models/links-classfication';
 import { ClassificationsService } from '../../services/classifications/classifications.service';
 
 @Component({
@@ -56,7 +54,7 @@ describe('TaskanaTreeComponent', () => {
           case ClassificationSelectors.activeAction:
             return of(ACTION.CREATE);
           case ClassificationSelectors.classifications:
-            return of([new TreeNodeModel('id4')]);
+            return of([{ classificationId: 'id4' }]);
           default:
             return of();
         }
@@ -86,10 +84,22 @@ describe('TaskanaTreeComponent', () => {
   });
 
   it('should be change the classification parent (onMoveNode)', async () => {
-    const classification = new ClassificationDefinition('id4',
-      'key4', '', '', 'MANUAL', 'DOMAIN_A', 'TASK', true, '019-04-10T10:23:34.985Z', '2019-04-10T10:23:34.985Z',
-      'classification4', 'description', 1, 'level', '', '', '', '', '', '',
-      '', '', '', new LinksClassification({ href: '' }, '', '', { href: '' }, { href: '' }, { href: '' }));
+    const classification = {
+      classificationId: 'id4',
+      key: 'key4',
+      category: 'MANUAL',
+      domain: 'DOMAIN_A',
+      parentId: '',
+      parentKey: '',
+      type: 'TASK',
+      isValidInDomain: true,
+      created: '019-04-10T10:23:34.985Z',
+      modified: '2019-04-10T10:23:34.985Z',
+      name: 'classification4',
+      description: 'description',
+      priority: 1,
+      serviceLevel: 'level',
+    };
 
     // using parameter 'any' since getClassification is a private method
     spyOn<any>(component, 'getClassification').and.returnValue(classification);
@@ -108,10 +118,22 @@ describe('TaskanaTreeComponent', () => {
   });
 
   it('should be changed the parent classification to root node (onDrop)', async () => {
-    const classification = new ClassificationDefinition('id3',
-      'key3', 'id1', 'key1', 'MANUAL', 'DOMAIN_A', 'TASK', true, '019-04-10T10:23:34.985Z', '2019-04-10T10:23:34.985Z',
-      'classification3', 'description', 1, 'level', '', '', '', '', '', '',
-      '', '', '', new LinksClassification({ href: '' }, '', '', { href: '' }, { href: '' }, { href: '' }));
+    const classification = {
+      classificationId: 'id3',
+      key: 'key3',
+      parentId: 'id1',
+      parentKey: 'key1',
+      category: 'MANUAL',
+      domain: 'DOMAIN_A',
+      type: 'TASK',
+      isValidInDomain: true,
+      created: '019-04-10T10:23:34.985Z',
+      modified: '2019-04-10T10:23:34.985Z',
+      name: 'classification3',
+      description: 'description',
+      priority: 1,
+      serviceLevel: 'level'
+    };
 
     // using parameter 'any' since getClassification is a private method
     spyOn<any>(component, 'getClassification').and.returnValue(classification);
