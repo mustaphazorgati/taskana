@@ -6,6 +6,7 @@ import pro.taskana.common.api.exceptions.InvalidArgumentException;
 import pro.taskana.common.api.exceptions.NotAuthorizedException;
 import pro.taskana.monitor.api.reports.header.TimeIntervalColumnHeader;
 import pro.taskana.monitor.api.reports.item.MonitorQueryItem;
+import pro.taskana.task.api.TaskTimestamp;
 
 /**
  * A CategoryReport contains the total numbers of tasks of the respective category as well as the
@@ -27,5 +28,9 @@ public class CategoryReport extends Report<MonitorQueryItem, TimeIntervalColumnH
 
     @Override
     CategoryReport buildReport() throws NotAuthorizedException, InvalidArgumentException;
+
+    @Override
+    CategoryReport buildReport(TaskTimestamp timestamp)
+        throws NotAuthorizedException, InvalidArgumentException;
   }
 }

@@ -1,17 +1,23 @@
 package acceptance.report;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.ThrowingConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +32,7 @@ import pro.taskana.monitor.api.reports.row.FoldableRow;
 import pro.taskana.monitor.api.reports.row.Row;
 import pro.taskana.task.api.CustomField;
 import pro.taskana.task.api.TaskState;
+import pro.taskana.task.api.TaskTimestamp;
 
 /** Acceptance test for all "detailed classification report" scenarios. */
 @ExtendWith(JaasExtension.class)
@@ -34,24 +41,20 @@ class ProvideDetailedClassificationReportAccTest extends AbstractReportAccTest {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(ProvideDetailedClassificationReportAccTest.class);
 
+  private static final MonitorService MONITOR_SERVICE = taskanaEngine.getMonitorService();
+
   @Test
   void testRoleCheck() {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     ThrowingCallable call =
-        () -> {
-          monitorService.createClassificationReportBuilder().buildDetailedReport();
-        };
+        () -> MONITOR_SERVICE.createClassificationReportBuilder().buildDetailedReport();
     assertThatThrownBy(call).isInstanceOf(NotAuthorizedException.class);
   }
 
   @WithAccessId(user = "monitor")
   @Test
   void testGetTotalNumbersOfTasksOfDetailedClassificationReport() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     DetailedClassificationReport report =
-        monitorService.createClassificationReportBuilder().buildDetailedReport();
+        MONITOR_SERVICE.createClassificationReportBuilder().buildDetailedReport();
 
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug(reportToString(report));
@@ -100,12 +103,10 @@ class ProvideDetailedClassificationReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testGetDetailedClassificationReportWithReportLineItemDefinitions() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     List<TimeIntervalColumnHeader> columnHeaders = getListOfColumnHeaders();
 
     DetailedClassificationReport report =
-        monitorService
+        MONITOR_SERVICE
             .createClassificationReportBuilder()
             .inWorkingDays()
             .withColumnHeaders(columnHeaders)
@@ -130,14 +131,28 @@ class ProvideDetailedClassificationReportAccTest extends AbstractReportAccTest {
   }
 
   @WithAccessId(user = "monitor")
+  @TestFactory
+  Stream<DynamicTest> should_NotThrowError_When_buildReportForTaskState() {
+    Iterator<TaskTimestamp> iterator = Arrays.stream(TaskTimestamp.values()).iterator();
+    ThrowingConsumer<TaskTimestamp> test =
+        timestamp -> {
+          ThrowingCallable callable =
+              () ->
+                  MONITOR_SERVICE
+                      .createClassificationReportBuilder()
+                      .buildDetailedReport(timestamp);
+          assertThatCode(callable).doesNotThrowAnyException();
+        };
+    return DynamicTest.stream(iterator, t -> "for TaskState " + t, test);
+  }
+
+  @WithAccessId(user = "monitor")
   @Test
   void testEachItemOfDetailedClassificationReport() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     DetailedClassificationReport report =
-        monitorService
+        MONITOR_SERVICE
             .createClassificationReportBuilder()
             .inWorkingDays()
             .withColumnHeaders(columnHeaders)
@@ -195,15 +210,75 @@ class ProvideDetailedClassificationReportAccTest extends AbstractReportAccTest {
 
   @WithAccessId(user = "monitor")
   @Test
-  void testEachItemOfDetailedClassificationReportWithWorkbasketFilter() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
+  void should_computeNumbersAccordingToPlannedDate_When_BuildReportForPlanned() throws Exception {
+    List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
+    DetailedClassificationReport report =
+        MONITOR_SERVICE
+            .createClassificationReportBuilder()
+            .inWorkingDays()
+            .withColumnHeaders(columnHeaders)
+            .buildDetailedReport(TaskTimestamp.PLANNED);
+
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug(reportToString(report, columnHeaders));
+    }
+
+    assertThat(report).isNotNull();
+    assertThat(report.rowSize()).isEqualTo(5);
+
+    FoldableRow<DetailedMonitorQueryItem> line1 = report.getRow("L10000");
+    assertThat(line1.getCells()).isEqualTo(new int[] {0, 2, 8, 0, 0});
+
+    Row<DetailedMonitorQueryItem> detailedLine1 = line1.getFoldableRow("L11000");
+    assertThat(detailedLine1.getCells()).isEqualTo(new int[] {0, 1, 2, 0, 0});
+
+    Row<DetailedMonitorQueryItem> detailedLineNoAttachment1 = line1.getFoldableRow("N/A");
+    assertThat(detailedLineNoAttachment1.getCells()).isEqualTo(new int[] {0, 1, 6, 0, 0});
+
+    FoldableRow<DetailedMonitorQueryItem> line2 = report.getRow("L20000");
+    assertThat(line2.getCells()).isEqualTo(new int[] {0, 1, 9, 0, 0});
+
+    Row<DetailedMonitorQueryItem> detailedLine2 = line2.getFoldableRow("L22000");
+    assertThat(detailedLine2.getCells()).isEqualTo(new int[] {0, 0, 4, 0, 0});
+
+    Row<DetailedMonitorQueryItem> detailedLineNoAttachment2 = line2.getFoldableRow("N/A");
+    assertThat(detailedLineNoAttachment2.getCells()).isEqualTo(new int[] {0, 1, 5, 0, 0});
+
+    FoldableRow<DetailedMonitorQueryItem> line3 = report.getRow("L30000");
+    assertThat(line3.getCells()).isEqualTo(new int[] {0, 0, 7, 0, 0});
+
+    Row<DetailedMonitorQueryItem> detailedLine3a = line3.getFoldableRow("L33000");
+    assertThat(detailedLine3a.getCells()).isEqualTo(new int[] {0, 0, 3, 0, 0});
+
+    Row<DetailedMonitorQueryItem> detailedLine3b = line3.getFoldableRow("L99000");
+    assertThat(detailedLine3b.getCells()).isEqualTo(new int[] {0, 0, 1, 0, 0});
+
+    Row<DetailedMonitorQueryItem> detailedLineNoAttachment3 = line3.getFoldableRow("N/A");
+    assertThat(detailedLineNoAttachment3.getCells()).isEqualTo(new int[] {0, 0, 3, 0, 0});
+
+    FoldableRow<DetailedMonitorQueryItem> line4 = report.getRow("L40000");
+    assertThat(line4.getCells()).isEqualTo(new int[] {0, 0, 10, 0, 0});
+
+    Row<DetailedMonitorQueryItem> detailedLineNoAttachment4 = line4.getFoldableRow("N/A");
+    assertThat(detailedLineNoAttachment4.getCells()).isEqualTo(new int[] {0, 0, 10, 0, 0});
+
+    FoldableRow<DetailedMonitorQueryItem> line5 = report.getRow("L50000");
+    assertThat(line5.getCells()).isEqualTo(new int[] {0, 0, 13, 0, 0});
+
+    Row<DetailedMonitorQueryItem> detailedLineNoAttachment5 = line5.getFoldableRow("N/A");
+    assertThat(detailedLineNoAttachment5.getCells()).isEqualTo(new int[] {0, 0, 13, 0, 0});
+  }
+
+  @WithAccessId(user = "monitor")
+  @Test
+  void testEachItemOfDetailedClassificationReportWithWorkbasketFilter() throws Exception {
     List<String> workbasketIds =
         Collections.singletonList("WBI:000000000000000000000000000000000001");
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     DetailedClassificationReport report =
-        monitorService
+        MONITOR_SERVICE
             .createClassificationReportBuilder()
             .workbasketIdIn(workbasketIds)
             .inWorkingDays()
@@ -260,13 +335,11 @@ class ProvideDetailedClassificationReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testEachItemOfDetailedClassificationReportWithStateFilter() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     List<TaskState> states = Collections.singletonList(TaskState.READY);
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     DetailedClassificationReport report =
-        monitorService
+        MONITOR_SERVICE
             .createClassificationReportBuilder()
             .stateIn(states)
             .inWorkingDays()
@@ -323,12 +396,10 @@ class ProvideDetailedClassificationReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testEachItemOfDetailedClassificationReportNotInWorkingDays() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     DetailedClassificationReport report =
-        monitorService
+        MONITOR_SERVICE
             .createClassificationReportBuilder()
             .withColumnHeaders(columnHeaders)
             .buildDetailedReport();
@@ -386,13 +457,11 @@ class ProvideDetailedClassificationReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testEachItemOfDetailedClassificationReportWithCategoryFilter() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     List<String> categories = Arrays.asList("AUTOMATIC", "MANUAL");
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     DetailedClassificationReport report =
-        monitorService
+        MONITOR_SERVICE
             .createClassificationReportBuilder()
             .categoryIn(categories)
             .inWorkingDays()
@@ -428,13 +497,11 @@ class ProvideDetailedClassificationReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testEachItemOfDetailedClassificationReportWithDomainFilter() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     List<String> domains = Collections.singletonList("DOMAIN_A");
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     DetailedClassificationReport report =
-        monitorService
+        MONITOR_SERVICE
             .createClassificationReportBuilder()
             .inWorkingDays()
             .withColumnHeaders(columnHeaders)
@@ -491,14 +558,12 @@ class ProvideDetailedClassificationReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testEachItemOfDetailedClassificationReportWithCustomFieldValueFilter() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     Map<CustomField, String> customAttributeFilter = new HashMap<>();
     customAttributeFilter.put(CustomField.CUSTOM_1, "Geschaeftsstelle A");
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     DetailedClassificationReport report =
-        monitorService
+        MONITOR_SERVICE
             .createClassificationReportBuilder()
             .customAttributeFilterIn(customAttributeFilter)
             .inWorkingDays()

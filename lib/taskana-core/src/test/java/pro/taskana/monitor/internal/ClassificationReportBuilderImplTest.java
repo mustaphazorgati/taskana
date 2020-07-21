@@ -33,6 +33,7 @@ import pro.taskana.monitor.api.reports.item.MonitorQueryItem;
 import pro.taskana.monitor.api.reports.row.FoldableRow;
 import pro.taskana.task.api.CustomField;
 import pro.taskana.task.api.TaskState;
+import pro.taskana.task.api.TaskTimestamp;
 
 /** Unit Test for ClassificationReportBuilderImpl. */
 @ExtendWith(MockitoExtension.class)
@@ -75,6 +76,7 @@ class ClassificationReportBuilderImplTest {
             states,
             categories,
             domains,
+            TaskTimestamp.DUE,
             classificationIds,
             excludedClassificationIds,
             customAttributeFilter))
@@ -97,7 +99,7 @@ class ClassificationReportBuilderImplTest {
     verify(internalTaskanaEngineMock, times(2)).getEngine();
 
     verify(monitorMapperMock)
-        .getTaskCountOfClassifications(any(), any(), any(), any(), any(), any(), any());
+        .getTaskCountOfClassifications(any(), any(), any(), any(), any(), any(), any(), any());
     verify(internalTaskanaEngineMock).returnConnection();
     verifyNoMoreInteractions(
         internalTaskanaEngineMock,
@@ -137,6 +139,7 @@ class ClassificationReportBuilderImplTest {
             states,
             categories,
             domains,
+            TaskTimestamp.DUE,
             classificationIds,
             excludedClassificationIds,
             customAttributeFilter))
@@ -160,7 +163,7 @@ class ClassificationReportBuilderImplTest {
     verify(internalTaskanaEngineMock, times(2)).getEngine();
 
     verify(monitorMapperMock)
-        .getTaskCountOfClassifications(any(), any(), any(), any(), any(), any(), any());
+        .getTaskCountOfClassifications(any(), any(), any(), any(), any(), any(), any(), any());
     verify(internalTaskanaEngineMock).returnConnection();
     verifyNoMoreInteractions(
         internalTaskanaEngineMock,
@@ -199,6 +202,7 @@ class ClassificationReportBuilderImplTest {
             states,
             categories,
             domains,
+            TaskTimestamp.DUE,
             classificationIds,
             excludedClassificationIds,
             customAttributeFilter))
@@ -221,7 +225,8 @@ class ClassificationReportBuilderImplTest {
     verify(internalTaskanaEngineMock, times(2)).getEngine();
 
     verify(monitorMapperMock)
-        .getTaskCountOfDetailedClassifications(any(), any(), any(), any(), any(), any(), any());
+        .getTaskCountOfDetailedClassifications(
+            any(), any(), any(), any(), any(), any(), any(), any());
     verify(internalTaskanaEngineMock).returnConnection();
     verifyNoMoreInteractions(
         internalTaskanaEngineMock,
@@ -264,6 +269,7 @@ class ClassificationReportBuilderImplTest {
             states,
             categories,
             domains,
+            TaskTimestamp.DUE,
             classificationIds,
             excludedClassificationIds,
             customAttributeFilter))
@@ -287,7 +293,8 @@ class ClassificationReportBuilderImplTest {
     verify(internalTaskanaEngineMock, times(2)).getEngine();
 
     verify(monitorMapperMock)
-        .getTaskCountOfDetailedClassifications(any(), any(), any(), any(), any(), any(), any());
+        .getTaskCountOfDetailedClassifications(
+            any(), any(), any(), any(), any(), any(), any(), any());
     verify(internalTaskanaEngineMock).returnConnection();
     verifyNoMoreInteractions(
         internalTaskanaEngineMock,

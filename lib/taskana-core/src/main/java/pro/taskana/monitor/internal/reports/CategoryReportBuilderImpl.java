@@ -14,6 +14,7 @@ import pro.taskana.monitor.api.reports.header.TimeIntervalColumnHeader;
 import pro.taskana.monitor.api.reports.item.MonitorQueryItem;
 import pro.taskana.monitor.internal.MonitorMapper;
 import pro.taskana.monitor.internal.preprocessor.DaysToWorkingDaysReportPreProcessor;
+import pro.taskana.task.api.TaskTimestamp;
 
 /** The implementation of CategoryReportBuilder. */
 public class CategoryReportBuilderImpl
@@ -28,7 +29,13 @@ public class CategoryReportBuilderImpl
   }
 
   @Override
-  public CategoryReport buildReport() throws InvalidArgumentException, NotAuthorizedException {
+  public CategoryReport buildReport() throws NotAuthorizedException, InvalidArgumentException {
+    return buildReport(TaskTimestamp.DUE);
+  }
+
+  @Override
+  public CategoryReport buildReport(TaskTimestamp timestamp)
+      throws InvalidArgumentException, NotAuthorizedException {
     LOGGER.debug("entry to buildReport(), this = {}", this);
     this.taskanaEngine.getEngine().checkRoleMembership(TaskanaRole.MONITOR);
     try {
@@ -40,6 +47,7 @@ public class CategoryReportBuilderImpl
               this.states,
               this.categories,
               this.domains,
+              timestamp,
               this.classificationIds,
               this.excludedClassificationIds,
               this.customAttributeFilter);

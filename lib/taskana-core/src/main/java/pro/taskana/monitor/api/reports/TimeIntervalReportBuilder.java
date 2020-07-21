@@ -10,6 +10,7 @@ import pro.taskana.monitor.api.reports.header.TimeIntervalColumnHeader;
 import pro.taskana.monitor.api.reports.item.AgeQueryItem;
 import pro.taskana.task.api.CustomField;
 import pro.taskana.task.api.TaskState;
+import pro.taskana.task.api.TaskTimestamp;
 
 /**
  * "Super" Interface for all TimeIntervalReportBuilders.
@@ -123,4 +124,7 @@ public interface TimeIntervalReportBuilder<
    */
   List<String> listCustomAttributeValuesForCustomAttributeName(CustomField customField)
       throws NotAuthorizedException;
+
+  Report<I, H> buildReport(TaskTimestamp timestamp)
+      throws NotAuthorizedException, InvalidArgumentException;
 }

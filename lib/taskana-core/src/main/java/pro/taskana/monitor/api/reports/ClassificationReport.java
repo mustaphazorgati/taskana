@@ -10,6 +10,7 @@ import pro.taskana.monitor.api.reports.item.MonitorQueryItem;
 import pro.taskana.monitor.api.reports.row.DetailedClassificationRow;
 import pro.taskana.monitor.api.reports.row.FoldableRow;
 import pro.taskana.monitor.api.reports.row.Row;
+import pro.taskana.task.api.TaskTimestamp;
 
 /**
  * The ClassificationReport extends the Report. The {@link Row}s of the ClassificationReport are
@@ -28,6 +29,10 @@ public class ClassificationReport extends Report<MonitorQueryItem, TimeIntervalC
     @Override
     ClassificationReport buildReport() throws NotAuthorizedException, InvalidArgumentException;
 
+    @Override
+    ClassificationReport buildReport(TaskTimestamp timestamp)
+        throws NotAuthorizedException, InvalidArgumentException;
+
     /**
      * Returns a {@link DetailedClassificationReport} containing all tasks after applying the
      * filters. If the column headers are set the report is subdivided into clusters. Its {@link
@@ -39,6 +44,9 @@ public class ClassificationReport extends Report<MonitorQueryItem, TimeIntervalC
      * @throws NotAuthorizedException if the user has no rights to access the monitor
      */
     DetailedClassificationReport buildDetailedReport()
+        throws InvalidArgumentException, NotAuthorizedException;
+
+    DetailedClassificationReport buildDetailedReport(TaskTimestamp timestamp)
         throws InvalidArgumentException, NotAuthorizedException;
   }
 

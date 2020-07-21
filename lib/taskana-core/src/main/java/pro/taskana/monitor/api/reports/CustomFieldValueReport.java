@@ -6,6 +6,7 @@ import pro.taskana.common.api.exceptions.InvalidArgumentException;
 import pro.taskana.common.api.exceptions.NotAuthorizedException;
 import pro.taskana.monitor.api.reports.header.TimeIntervalColumnHeader;
 import pro.taskana.monitor.api.reports.item.MonitorQueryItem;
+import pro.taskana.task.api.TaskTimestamp;
 
 /**
  * A CustomFieldValueReport contains the total numbers of tasks of the respective custom field as
@@ -27,5 +28,9 @@ public class CustomFieldValueReport extends Report<MonitorQueryItem, TimeInterva
 
     @Override
     CustomFieldValueReport buildReport() throws NotAuthorizedException, InvalidArgumentException;
+
+    @Override
+    CustomFieldValueReport buildReport(TaskTimestamp timestamp)
+        throws NotAuthorizedException, InvalidArgumentException;
   }
 }

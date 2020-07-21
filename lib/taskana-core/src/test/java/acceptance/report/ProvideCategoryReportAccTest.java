@@ -1,18 +1,24 @@
 package acceptance.report;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.ThrowingConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +30,7 @@ import pro.taskana.monitor.api.reports.CategoryReport;
 import pro.taskana.monitor.api.reports.header.TimeIntervalColumnHeader;
 import pro.taskana.task.api.CustomField;
 import pro.taskana.task.api.TaskState;
+import pro.taskana.task.api.TaskTimestamp;
 
 /** Acceptance test for all "category report" scenarios. */
 @ExtendWith(JaasExtension.class)
@@ -31,26 +38,18 @@ class ProvideCategoryReportAccTest extends AbstractReportAccTest {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProvideCategoryReportAccTest.class);
 
+  private static final MonitorService MONITOR_SERVICE = taskanaEngine.getMonitorService();
+
   @Test
   void testRoleCheck() {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
-    //    Assertions.assertThrows(
-    //        NotAuthorizedException.class,
-    //        () -> monitorService.createCategoryReportBuilder().buildReport());
-    ThrowingCallable call =
-        () -> {
-          monitorService.createCategoryReportBuilder().buildReport();
-        };
-    assertThatThrownBy(call).isInstanceOf(NotAuthorizedException.class);
+    assertThatThrownBy(() -> MONITOR_SERVICE.createCategoryReportBuilder().buildReport())
+        .isInstanceOf(NotAuthorizedException.class);
   }
 
   @WithAccessId(user = "monitor")
   @Test
   void testGetTotalNumbersOfTasksOfCategoryReport() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
-    CategoryReport report = monitorService.createCategoryReportBuilder().buildReport();
+    CategoryReport report = MONITOR_SERVICE.createCategoryReportBuilder().buildReport();
 
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug(reportToString(report));
@@ -71,12 +70,10 @@ class ProvideCategoryReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testGetCategoryReportWithReportLineItemDefinitions() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     List<TimeIntervalColumnHeader> columnHeaders = getListOfColumnHeaders();
 
     CategoryReport report =
-        monitorService
+        MONITOR_SERVICE
             .createCategoryReportBuilder()
             .withColumnHeaders(columnHeaders)
             .inWorkingDays()
@@ -104,12 +101,10 @@ class ProvideCategoryReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testEachItemOfCategoryReport() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     CategoryReport report =
-        monitorService
+        MONITOR_SERVICE
             .createCategoryReportBuilder()
             .withColumnHeaders(columnHeaders)
             .inWorkingDays()
@@ -133,14 +128,57 @@ class ProvideCategoryReportAccTest extends AbstractReportAccTest {
   }
 
   @WithAccessId(user = "monitor")
-  @Test
-  void testEachItemOfCategoryReportNotInWorkingDays() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
+  @TestFactory
+  Stream<DynamicTest> should_NotThrowError_When_buildReportForTaskState() {
+    Iterator<TaskTimestamp> iterator = Arrays.stream(TaskTimestamp.values()).iterator();
+    ThrowingConsumer<TaskTimestamp> test =
+        timestamp -> {
+          ThrowingCallable callable =
+              () -> MONITOR_SERVICE.createCategoryReportBuilder().buildReport(timestamp);
+          assertThatCode(callable).doesNotThrowAnyException();
+        };
+    return DynamicTest.stream(iterator, t -> "for TaskState " + t, test);
+  }
 
+  @WithAccessId(user = "monitor")
+  @Test
+  void should_computeNumbersAccordingToPlannedDate_When_BuildReportForPlanned() throws Exception {
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     CategoryReport report =
-        monitorService.createCategoryReportBuilder().withColumnHeaders(columnHeaders).buildReport();
+        MONITOR_SERVICE
+            .createCategoryReportBuilder()
+            .withColumnHeaders(columnHeaders)
+            .inWorkingDays()
+            .buildReport(TaskTimestamp.PLANNED);
+
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug(reportToString(report, columnHeaders));
+    }
+
+    assertThat(report).isNotNull();
+    assertThat(report.rowSize()).isEqualTo(3);
+
+    int[] row1 = report.getRow("EXTERN").getCells();
+    assertThat(row1).isEqualTo(new int[] {0, 3, 30, 0, 0});
+
+    int[] row2 = report.getRow("AUTOMATIC").getCells();
+    assertThat(row2).isEqualTo(new int[] {0, 0, 7, 0, 0});
+
+    int[] row3 = report.getRow("MANUAL").getCells();
+    assertThat(row3).isEqualTo(new int[] {0, 0, 10, 0, 0});
+  }
+
+  @WithAccessId(user = "monitor")
+  @Test
+  void testEachItemOfCategoryReportNotInWorkingDays() throws Exception {
+    List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
+
+    CategoryReport report =
+        MONITOR_SERVICE
+            .createCategoryReportBuilder()
+            .withColumnHeaders(columnHeaders)
+            .buildReport();
 
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug(reportToString(report, columnHeaders));
@@ -162,14 +200,12 @@ class ProvideCategoryReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testEachItemOfCategoryReportWithWorkbasketFilter() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     List<String> workbasketIds =
         Collections.singletonList("WBI:000000000000000000000000000000000001");
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     CategoryReport report =
-        monitorService
+        MONITOR_SERVICE
             .createCategoryReportBuilder()
             .withColumnHeaders(columnHeaders)
             .inWorkingDays()
@@ -196,13 +232,11 @@ class ProvideCategoryReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testEachItemOfCategoryReportWithStateFilter() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     List<TaskState> states = Collections.singletonList(TaskState.READY);
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     CategoryReport report =
-        monitorService
+        MONITOR_SERVICE
             .createCategoryReportBuilder()
             .withColumnHeaders(columnHeaders)
             .stateIn(states)
@@ -229,13 +263,11 @@ class ProvideCategoryReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testEachItemOfCategoryReportWithCategoryFilter() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     List<String> categories = Arrays.asList("AUTOMATIC", "MANUAL");
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     CategoryReport report =
-        monitorService
+        MONITOR_SERVICE
             .createCategoryReportBuilder()
             .withColumnHeaders(columnHeaders)
             .categoryIn(categories)
@@ -259,13 +291,11 @@ class ProvideCategoryReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testEachItemOfCategoryReportWithDomainFilter() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     List<String> domains = Collections.singletonList("DOMAIN_A");
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     CategoryReport report =
-        monitorService
+        MONITOR_SERVICE
             .createCategoryReportBuilder()
             .withColumnHeaders(columnHeaders)
             .domainIn(domains)
@@ -292,14 +322,12 @@ class ProvideCategoryReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testEachItemOfCategoryReportWithCustomFieldValueFilter() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     Map<CustomField, String> customAttributeFilter = new HashMap<>();
     customAttributeFilter.put(CustomField.CUSTOM_1, "Geschaeftsstelle A");
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     CategoryReport report =
-        monitorService
+        MONITOR_SERVICE
             .createCategoryReportBuilder()
             .withColumnHeaders(columnHeaders)
             .customAttributeFilterIn(customAttributeFilter)

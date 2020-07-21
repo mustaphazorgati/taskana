@@ -7,6 +7,7 @@ import pro.taskana.common.api.exceptions.NotAuthorizedException;
 import pro.taskana.monitor.api.CombinedClassificationFilter;
 import pro.taskana.monitor.api.reports.header.TimeIntervalColumnHeader;
 import pro.taskana.monitor.api.reports.item.MonitorQueryItem;
+import pro.taskana.task.api.TaskTimestamp;
 
 /**
  * A WorkbasketReport contains the total numbers of tasks of the respective workbasket as well as
@@ -30,14 +31,8 @@ public class WorkbasketReport extends Report<MonitorQueryItem, TimeIntervalColum
     @Override
     WorkbasketReport buildReport() throws NotAuthorizedException, InvalidArgumentException;
 
-    /**
-     * buildPlannedDateBasedReport is querying grouping by plannedDate instead of due date.
-     *
-     * @return the built workbasketReport
-     * @throws NotAuthorizedException when the current user is not authorized to perform this action
-     * @throws InvalidArgumentException when the arguments given to the builder do not match
-     */
-    WorkbasketReport buildPlannedDateBasedReport()
+    @Override
+    WorkbasketReport buildReport(TaskTimestamp timestamp)
         throws NotAuthorizedException, InvalidArgumentException;
 
     /**

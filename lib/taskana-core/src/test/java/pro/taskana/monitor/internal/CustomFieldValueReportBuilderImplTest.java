@@ -29,6 +29,7 @@ import pro.taskana.monitor.api.reports.header.TimeIntervalColumnHeader;
 import pro.taskana.monitor.api.reports.item.MonitorQueryItem;
 import pro.taskana.task.api.CustomField;
 import pro.taskana.task.api.TaskState;
+import pro.taskana.task.api.TaskTimestamp;
 
 /** Unit Test for CustomFieldValueReportBuilderImpl. */
 @ExtendWith(MockitoExtension.class)
@@ -72,6 +73,7 @@ class CustomFieldValueReportBuilderImplTest {
             states,
             categories,
             domains,
+            TaskTimestamp.DUE,
             classificationIds,
             excludedClassificationIds,
             customAttributeFilter))
@@ -93,7 +95,8 @@ class CustomFieldValueReportBuilderImplTest {
     verify(taskanaEngineMock).getWorkingDaysToDaysConverter();
     verify(internalTaskanaEngineMock, times(2)).getEngine();
     verify(monitorMapperMock)
-        .getTaskCountOfCustomFieldValues(any(), any(), any(), any(), any(), any(), any(), any());
+        .getTaskCountOfCustomFieldValues(
+            any(), any(), any(), any(), any(), any(), any(), any(), any());
     verify(internalTaskanaEngineMock).returnConnection();
     verifyNoMoreInteractions(
         internalTaskanaEngineMock,
@@ -132,6 +135,7 @@ class CustomFieldValueReportBuilderImplTest {
             states,
             categories,
             domains,
+            TaskTimestamp.DUE,
             classificationIds,
             excludedClassificationIds,
             customAttributeFilter))
@@ -154,7 +158,8 @@ class CustomFieldValueReportBuilderImplTest {
     verify(taskanaEngineMock).getWorkingDaysToDaysConverter();
     verify(internalTaskanaEngineMock, times(2)).getEngine();
     verify(monitorMapperMock)
-        .getTaskCountOfCustomFieldValues(any(), any(), any(), any(), any(), any(), any(), any());
+        .getTaskCountOfCustomFieldValues(
+            any(), any(), any(), any(), any(), any(), any(), any(), any());
     verify(internalTaskanaEngineMock).returnConnection();
     verifyNoMoreInteractions(
         internalTaskanaEngineMock,

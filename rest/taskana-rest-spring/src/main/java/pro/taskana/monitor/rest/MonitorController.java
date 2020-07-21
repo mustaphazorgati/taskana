@@ -24,6 +24,7 @@ import pro.taskana.monitor.api.reports.header.TimeIntervalColumnHeader;
 import pro.taskana.monitor.rest.assembler.ReportRepresentationModelAssembler;
 import pro.taskana.monitor.rest.models.ReportRepresentationModel;
 import pro.taskana.task.api.TaskState;
+import pro.taskana.task.api.TaskTimestamp;
 
 /** Controller for all monitoring endpoints. */
 @RestController
@@ -104,7 +105,7 @@ public class MonitorController {
                 .createWorkbasketReportBuilder()
                 .stateIn(states)
                 .withColumnHeaders(getDateTimeInterval(daysInPast))
-                .buildPlannedDateBasedReport(),
+                .buildReport(TaskTimestamp.PLANNED),
             daysInPast,
             states);
     if (LOGGER.isDebugEnabled()) {

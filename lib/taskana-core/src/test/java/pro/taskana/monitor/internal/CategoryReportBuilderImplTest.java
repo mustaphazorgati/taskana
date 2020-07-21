@@ -30,6 +30,7 @@ import pro.taskana.monitor.api.reports.header.TimeIntervalColumnHeader;
 import pro.taskana.monitor.api.reports.item.MonitorQueryItem;
 import pro.taskana.task.api.CustomField;
 import pro.taskana.task.api.TaskState;
+import pro.taskana.task.api.TaskTimestamp;
 
 /** Unit Test for CategoryBuilderImpl. */
 @ExtendWith(MockitoExtension.class)
@@ -72,6 +73,7 @@ class CategoryReportBuilderImplTest {
             states,
             categories,
             domains,
+            TaskTimestamp.DUE,
             classificationIds,
             excludedClassificationIds,
             customAttributeFilter))
@@ -93,7 +95,7 @@ class CategoryReportBuilderImplTest {
     verify(taskanaEngineMock).checkRoleMembership(any());
     verify(taskanaEngineMock).getWorkingDaysToDaysConverter();
     verify(monitorMapperMock)
-        .getTaskCountOfCategories(any(), any(), any(), any(), any(), any(), any());
+        .getTaskCountOfCategories(any(), any(), any(), any(), any(), any(), any(), any());
     verify(internalTaskanaEngineMock).returnConnection();
     verifyNoMoreInteractions(
         internalTaskanaEngineMock,
@@ -131,6 +133,7 @@ class CategoryReportBuilderImplTest {
             states,
             categories,
             domains,
+            TaskTimestamp.DUE,
             classificationIds,
             excludedClassificationIds,
             customAttributeFilter))
@@ -153,7 +156,7 @@ class CategoryReportBuilderImplTest {
     verify(taskanaEngineMock).checkRoleMembership(any());
     verify(taskanaEngineMock).getWorkingDaysToDaysConverter();
     verify(monitorMapperMock)
-        .getTaskCountOfCategories(any(), any(), any(), any(), any(), any(), any());
+        .getTaskCountOfCategories(any(), any(), any(), any(), any(), any(), any(), any());
     verify(internalTaskanaEngineMock).returnConnection();
     verifyNoMoreInteractions(
         internalTaskanaEngineMock,

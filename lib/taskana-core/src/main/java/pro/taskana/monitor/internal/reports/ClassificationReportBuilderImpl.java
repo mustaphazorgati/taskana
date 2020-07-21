@@ -16,6 +16,7 @@ import pro.taskana.monitor.api.reports.item.DetailedMonitorQueryItem;
 import pro.taskana.monitor.api.reports.item.MonitorQueryItem;
 import pro.taskana.monitor.internal.MonitorMapper;
 import pro.taskana.monitor.internal.preprocessor.DaysToWorkingDaysReportPreProcessor;
+import pro.taskana.task.api.TaskTimestamp;
 
 /** The implementation of ClassificationReportBuilder. */
 public class ClassificationReportBuilderImpl
@@ -31,6 +32,12 @@ public class ClassificationReportBuilderImpl
 
   @Override
   public ClassificationReport buildReport()
+      throws NotAuthorizedException, InvalidArgumentException {
+    return buildReport(TaskTimestamp.DUE);
+  }
+
+  @Override
+  public ClassificationReport buildReport(TaskTimestamp timestamp)
       throws InvalidArgumentException, NotAuthorizedException {
     LOGGER.debug("entry to buildReport(), this = {}", this);
     this.taskanaEngine.getEngine().checkRoleMembership(TaskanaRole.MONITOR, TaskanaRole.ADMIN);
@@ -43,6 +50,7 @@ public class ClassificationReportBuilderImpl
               this.states,
               this.categories,
               this.domains,
+              timestamp,
               this.classificationIds,
               this.excludedClassificationIds,
               this.customAttributeFilter);
@@ -60,6 +68,12 @@ public class ClassificationReportBuilderImpl
   @Override
   public DetailedClassificationReport buildDetailedReport()
       throws InvalidArgumentException, NotAuthorizedException {
+    return buildDetailedReport(TaskTimestamp.DUE);
+  }
+
+  @Override
+  public DetailedClassificationReport buildDetailedReport(TaskTimestamp timestamp)
+      throws InvalidArgumentException, NotAuthorizedException {
     LOGGER.debug("entry to buildDetailedReport(), this = {}", this);
     this.taskanaEngine.getEngine().checkRoleMembership(TaskanaRole.MONITOR, TaskanaRole.ADMIN);
     try {
@@ -71,6 +85,7 @@ public class ClassificationReportBuilderImpl
               this.states,
               this.categories,
               this.domains,
+              timestamp,
               this.classificationIds,
               this.excludedClassificationIds,
               this.customAttributeFilter);

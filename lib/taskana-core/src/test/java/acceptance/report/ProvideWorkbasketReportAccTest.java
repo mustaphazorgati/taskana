@@ -1,18 +1,24 @@
 package acceptance.report;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.ThrowingConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +31,7 @@ import pro.taskana.monitor.api.reports.WorkbasketReport;
 import pro.taskana.monitor.api.reports.header.TimeIntervalColumnHeader;
 import pro.taskana.task.api.CustomField;
 import pro.taskana.task.api.TaskState;
+import pro.taskana.task.api.TaskTimestamp;
 
 /** Acceptance test for all "workbasket level report" scenarios. */
 @ExtendWith(JaasExtension.class)
@@ -33,22 +40,18 @@ class ProvideWorkbasketReportAccTest extends AbstractReportAccTest {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(ProvideWorkbasketReportAccTest.class);
 
+  private static final MonitorService MONITOR_SERVICE = taskanaEngine.getMonitorService();
+
   @Test
   void testRoleCheck() {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-    ThrowingCallable call =
-        () -> {
-          monitorService.createWorkbasketReportBuilder().buildReport();
-        };
-    assertThatThrownBy(call).isInstanceOf(NotAuthorizedException.class);
+    assertThatThrownBy(() -> MONITOR_SERVICE.createWorkbasketReportBuilder().buildReport())
+        .isInstanceOf(NotAuthorizedException.class);
   }
 
   @WithAccessId(user = "monitor")
   @Test
   void testGetTotalNumbersOfTasksOfWorkbasketReportBasedOnDueDate() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
-    WorkbasketReport report = monitorService.createWorkbasketReportBuilder().buildReport();
+    WorkbasketReport report = MONITOR_SERVICE.createWorkbasketReportBuilder().buildReport();
 
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug(reportToString(report));
@@ -67,12 +70,10 @@ class ProvideWorkbasketReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testGetWorkbasketReportWithReportLineItemDefinitions() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     List<TimeIntervalColumnHeader> columnHeaders = getListOfColumnHeaders();
 
     WorkbasketReport report =
-        monitorService
+        MONITOR_SERVICE
             .createWorkbasketReportBuilder()
             .withColumnHeaders(columnHeaders)
             .inWorkingDays()
@@ -99,14 +100,25 @@ class ProvideWorkbasketReportAccTest extends AbstractReportAccTest {
   }
 
   @WithAccessId(user = "monitor")
+  @TestFactory
+  Stream<DynamicTest> should_NotThrowError_When_buildReportForTaskState() {
+    Iterator<TaskTimestamp> iterator = Arrays.stream(TaskTimestamp.values()).iterator();
+    ThrowingConsumer<TaskTimestamp> test =
+        timestamp -> {
+          ThrowingCallable callable =
+              () -> MONITOR_SERVICE.createWorkbasketReportBuilder().buildReport(timestamp);
+          assertThatCode(callable).doesNotThrowAnyException();
+        };
+    return DynamicTest.stream(iterator, t -> "for TaskState " + t, test);
+  }
+
+  @WithAccessId(user = "monitor")
   @Test
   void testEachItemOfWorkbasketReport() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     WorkbasketReport report =
-        monitorService
+        MONITOR_SERVICE
             .createWorkbasketReportBuilder()
             .withColumnHeaders(columnHeaders)
             .inWorkingDays()
@@ -131,13 +143,39 @@ class ProvideWorkbasketReportAccTest extends AbstractReportAccTest {
 
   @WithAccessId(user = "monitor")
   @Test
-  void testEachItemOfWorkbasketReportNotInWorkingDays() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
+  void should_computeNumbersAccordingToPlannedDate_When_BuildReportForPlanned() throws Exception {
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     WorkbasketReport report =
-        monitorService
+        MONITOR_SERVICE
+            .createWorkbasketReportBuilder()
+            .withColumnHeaders(columnHeaders)
+            .inWorkingDays()
+            .buildReport(TaskTimestamp.PLANNED);
+
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug(reportToString(report, columnHeaders));
+    }
+
+    assertThat(report).isNotNull();
+    assertThat(report.rowSize()).isEqualTo(3);
+    int[] row1 = report.getRow("USER-1-1").getCells();
+    assertThat(row1).isEqualTo(new int[] {0, 2, 18, 0, 0});
+
+    int[] row2 = report.getRow("USER-1-2").getCells();
+    assertThat(row2).isEqualTo(new int[] {0, 1, 19, 0, 0});
+
+    int[] row3 = report.getRow("USER-1-3").getCells();
+    assertThat(row3).isEqualTo(new int[] {0, 0, 10, 0, 0});
+  }
+
+  @WithAccessId(user = "monitor")
+  @Test
+  void testEachItemOfWorkbasketReportNotInWorkingDays() throws Exception {
+    List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
+
+    WorkbasketReport report =
+        MONITOR_SERVICE
             .createWorkbasketReportBuilder()
             .withColumnHeaders(columnHeaders)
             .buildReport();
@@ -162,14 +200,12 @@ class ProvideWorkbasketReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testEachItemOfWorkbasketReportWithWorkbasketFilter() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     List<String> workbasketIds =
         Collections.singletonList("WBI:000000000000000000000000000000000001");
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     WorkbasketReport report =
-        monitorService
+        MONITOR_SERVICE
             .createWorkbasketReportBuilder()
             .withColumnHeaders(columnHeaders)
             .workbasketIdIn(workbasketIds)
@@ -190,13 +226,11 @@ class ProvideWorkbasketReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testEachItemOfWorkbasketReportWithStateFilter() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     List<TaskState> states = Collections.singletonList(TaskState.READY);
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     WorkbasketReport report =
-        monitorService
+        MONITOR_SERVICE
             .createWorkbasketReportBuilder()
             .withColumnHeaders(columnHeaders)
             .stateIn(states)
@@ -223,13 +257,11 @@ class ProvideWorkbasketReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testEachItemOfWorkbasketReportWithCategoryFilter() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     List<String> categories = Arrays.asList("AUTOMATIC", "MANUAL");
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     WorkbasketReport report =
-        monitorService
+        MONITOR_SERVICE
             .createWorkbasketReportBuilder()
             .withColumnHeaders(columnHeaders)
             .categoryIn(categories)
@@ -256,13 +288,11 @@ class ProvideWorkbasketReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testEachItemOfWorkbasketReportWithDomainFilter() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     List<String> domains = Collections.singletonList("DOMAIN_A");
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     WorkbasketReport report =
-        monitorService
+        MONITOR_SERVICE
             .createWorkbasketReportBuilder()
             .withColumnHeaders(columnHeaders)
             .domainIn(domains)
@@ -289,14 +319,12 @@ class ProvideWorkbasketReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testEachItemOfWorkbasketReportWithCustomFieldValueFilter() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     Map<CustomField, String> customAttributeFilter = new HashMap<>();
     customAttributeFilter.put(CustomField.CUSTOM_1, "Geschaeftsstelle A");
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
 
     WorkbasketReport report =
-        monitorService
+        MONITOR_SERVICE
             .createWorkbasketReportBuilder()
             .withColumnHeaders(columnHeaders)
             .customAttributeFilterIn(customAttributeFilter)
@@ -323,8 +351,6 @@ class ProvideWorkbasketReportAccTest extends AbstractReportAccTest {
   @WithAccessId(user = "monitor")
   @Test
   void testEachItemOfWorkbasketReportForSelectedClassifications() throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
-
     List<TimeIntervalColumnHeader> columnHeaders = getShortListOfColumnHeaders();
     List<CombinedClassificationFilter> combinedClassificationFilter = new ArrayList<>();
     combinedClassificationFilter.add(
@@ -343,7 +369,7 @@ class ProvideWorkbasketReportAccTest extends AbstractReportAccTest {
         new CombinedClassificationFilter("CLI:000000000000000000000000000000000005"));
 
     WorkbasketReport report =
-        monitorService
+        MONITOR_SERVICE
             .createWorkbasketReportBuilder()
             .withColumnHeaders(columnHeaders)
             .combinedClassificationFilterIn(combinedClassificationFilter)
@@ -371,14 +397,13 @@ class ProvideWorkbasketReportAccTest extends AbstractReportAccTest {
   @Test
   void testGetTotalNumbersOfTasksOfWorkbasketReportBasedOnPlannedDateWithReportLineItemDefinitions()
       throws Exception {
-    MonitorService monitorService = taskanaEngine.getMonitorService();
     List<TimeIntervalColumnHeader> columnHeaders = getListOfColumnHeaders();
 
     WorkbasketReport report =
-        monitorService
+        MONITOR_SERVICE
             .createWorkbasketReportBuilder()
             .withColumnHeaders(columnHeaders)
-            .buildPlannedDateBasedReport();
+            .buildReport(TaskTimestamp.PLANNED);
 
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug(reportToString(report));
