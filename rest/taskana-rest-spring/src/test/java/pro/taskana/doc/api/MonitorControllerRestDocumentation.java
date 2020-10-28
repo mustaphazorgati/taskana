@@ -54,7 +54,7 @@ class MonitorControllerRestDocumentation extends BaseRestDocumentation {
     this.mockMvc
         .perform(
             RestDocumentationRequestBuilders.get(restHelper.toUrl(Mapping.URL_MONITOR_TASKS_STATUS))
-                .header("Authorization", ADMIN_CREDENTIALS))
+                .headers(restHelper.getHeadersAdmin()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(
             MockMvcRestDocumentation.document(
@@ -68,8 +68,7 @@ class MonitorControllerRestDocumentation extends BaseRestDocumentation {
             RestDocumentationRequestBuilders.get(
                     restHelper.toUrl(Mapping.URL_MONITOR_TASKS_WORKBASKET)
                         + "?daysInPast=4&states=READY,CLAIMED,COMPLETED")
-                .accept("application/hal+json")
-                .header("Authorization", ADMIN_CREDENTIALS))
+                .headers(restHelper.getHeadersAdmin()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(
             MockMvcRestDocumentation.document(
@@ -78,12 +77,11 @@ class MonitorControllerRestDocumentation extends BaseRestDocumentation {
 
   @Test
   void tasksClassificationReport() throws Exception {
-    this.mockMvc
+    mockMvc
         .perform(
             RestDocumentationRequestBuilders.get(
                     restHelper.toUrl(Mapping.URL_MONITOR_TASKS_CLASSIFICATION))
-                .accept("application/hal+json")
-                .header("Authorization", ADMIN_CREDENTIALS))
+                .headers(restHelper.getHeadersAdmin()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(
             MockMvcRestDocumentation.document(
@@ -95,8 +93,7 @@ class MonitorControllerRestDocumentation extends BaseRestDocumentation {
     this.mockMvc
         .perform(
             RestDocumentationRequestBuilders.get(restHelper.toUrl(Mapping.URL_MONITOR_TIMESTAMP))
-                .accept("application/hal+json")
-                .header("Authorization", ADMIN_CREDENTIALS))
+                .headers(restHelper.getHeadersAdmin()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(
             MockMvcRestDocumentation.document(

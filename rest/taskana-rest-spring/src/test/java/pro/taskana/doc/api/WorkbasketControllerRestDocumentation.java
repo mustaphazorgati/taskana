@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import pro.taskana.common.rest.Mapping;
 import pro.taskana.common.rest.models.TaskanaPagedModelKeys;
 import pro.taskana.common.test.doc.api.BaseRestDocumentation;
+import pro.taskana.common.test.rest.RestHelper;
 
 /** Generate REST Documentatioon for the WorkbasketController. */
 class WorkbasketControllerRestDocumentation extends BaseRestDocumentation {
@@ -335,8 +336,7 @@ class WorkbasketControllerRestDocumentation extends BaseRestDocumentation {
         .perform(
             RestDocumentationRequestBuilders.get(
                     restHelper.toUrl(Mapping.URL_WORKBASKET) + "?type=PERSONAL")
-                .accept("application/hal+json")
-                .header("Authorization", TEAMLEAD_1_CREDENTIALS))
+                .headers(restHelper.getHeadersTeamLead1()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(
             MockMvcRestDocumentation.document(
@@ -350,8 +350,7 @@ class WorkbasketControllerRestDocumentation extends BaseRestDocumentation {
             RestDocumentationRequestBuilders.get(
                     restHelper.toUrl(
                         Mapping.URL_WORKBASKET_ID, "WBI:100000000000000000000000000000000001"))
-                .accept("application/hal+json")
-                .header("Authorization", TEAMLEAD_1_CREDENTIALS))
+                .headers(restHelper.getHeadersTeamLead1()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("_links.self.href",
             is("http://localhost:8080/api/v1/workbaskets/WBI:100000000000000000000000000000000001")))
@@ -368,8 +367,7 @@ class WorkbasketControllerRestDocumentation extends BaseRestDocumentation {
                     restHelper.toUrl(
                         Mapping.URL_WORKBASKET_ID_ACCESSITEMS,
                         "WBI:100000000000000000000000000000000001"))
-                .accept("application/hal+json")
-                .header("Authorization", TEAMLEAD_1_CREDENTIALS))
+                .headers(restHelper.getHeadersTeamLead1()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(
             MockMvcRestDocumentation.document(
@@ -384,8 +382,7 @@ class WorkbasketControllerRestDocumentation extends BaseRestDocumentation {
             RestDocumentationRequestBuilders.get(
                     restHelper.toUrl(
                         Mapping.URL_WORKBASKET_ID, "WBI:100000000000000000000000000000000001"))
-                .accept("application/hal+json")
-                .header("Authorization", TEAMLEAD_1_CREDENTIALS))
+                .headers(restHelper.getHeadersTeamLead1()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("_links.self.href",
             is("http://localhost:8080/api/v1/workbaskets/WBI:100000000000000000000000000000000001")))
@@ -402,7 +399,7 @@ class WorkbasketControllerRestDocumentation extends BaseRestDocumentation {
                     restHelper.toUrl(
                         Mapping.URL_WORKBASKET_ID_DISTRIBUTION,
                         "WBI:100000000000000000000000000000000007"))
-                .header("Authorization", TEAMLEAD_1_CREDENTIALS))
+                .headers(restHelper.getHeadersTeamLead1()))
         .andExpect(MockMvcResultMatchers.status().isNoContent())
         .andDo(MockMvcRestDocumentation.document("RemoveWorkbasketAsDistributionTargetDocTest"));
   }
@@ -415,7 +412,7 @@ class WorkbasketControllerRestDocumentation extends BaseRestDocumentation {
                     restHelper.toUrl(
                         Mapping.URL_WORKBASKET_ID_DISTRIBUTION,
                         "WBI:100000000000000000000000000000000002"))
-                .header("Authorization", TEAMLEAD_1_CREDENTIALS))
+                .headers(restHelper.getHeadersTeamLead1()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("_links.self.href",
             is("http://localhost:8080/api/v1/workbaskets/WBI:100000000000000000000000000000000002/distribution-targets")))
@@ -430,8 +427,7 @@ class WorkbasketControllerRestDocumentation extends BaseRestDocumentation {
     this.mockMvc
         .perform(
             RestDocumentationRequestBuilders.post(restHelper.toUrl(Mapping.URL_WORKBASKET))
-                .contentType("application/json")
-                .header("Authorization", TEAMLEAD_1_CREDENTIALS)
+                .headers(restHelper.getHeadersTeamLead1())
                 .content(
                     "{\"key\" : \"asdasdasd\", \"name\" : \"Gruppenpostkorb KSC\", "
                         + "\"domain\" : \"DOMAIN_A\", \"type\" : \"GROUP\",   "
@@ -454,7 +450,7 @@ class WorkbasketControllerRestDocumentation extends BaseRestDocumentation {
                 Mapping.URL_WORKBASKET_ID, "WBI:100000000000000000000000000000000002"));
     HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("GET");
-    con.setRequestProperty("Authorization", ADMIN_CREDENTIALS);
+    con.setRequestProperty("Authorization", RestHelper.AUTHORIZATION_ADMIN);
     assertEquals(200, con.getResponseCode());
 
     String modifiedWorkbasket;
@@ -474,8 +470,7 @@ class WorkbasketControllerRestDocumentation extends BaseRestDocumentation {
             RestDocumentationRequestBuilders.put(
                     restHelper.toUrl(
                         Mapping.URL_WORKBASKET_ID, "WBI:100000000000000000000000000000000002"))
-                .header("Authorization", TEAMLEAD_1_CREDENTIALS)
-                .contentType("application/json")
+                .headers(restHelper.getHeadersTeamLead1())
                 .content(modifiedWorkbasket))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("_links.self.href",
@@ -494,7 +489,7 @@ class WorkbasketControllerRestDocumentation extends BaseRestDocumentation {
             RestDocumentationRequestBuilders.delete(
                     restHelper.toUrl(
                         Mapping.URL_WORKBASKET_ID, "WBI:100000000000000000000000000000000008"))
-                .header("Authorization", ADMIN_CREDENTIALS))
+                .headers(restHelper.getHeadersAdmin()))
         .andExpect(MockMvcResultMatchers.status().isNoContent())
         .andDo(MockMvcRestDocumentation.document("DeleteWorkbasketDocTest"));
   }
@@ -507,8 +502,7 @@ class WorkbasketControllerRestDocumentation extends BaseRestDocumentation {
                     restHelper.toUrl(
                         Mapping.URL_WORKBASKET_ID_ACCESSITEMS,
                         "WBI:100000000000000000000000000000000001"))
-                .accept("application/hal+json")
-                .header("Authorization", TEAMLEAD_1_CREDENTIALS))
+                .headers(restHelper.getHeadersTeamLead1()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("_links.self.href",
             is("http://localhost:8080/api/v1/workbaskets/WBI:100000000000000000000000000000000001/workbasketAccessItems")))

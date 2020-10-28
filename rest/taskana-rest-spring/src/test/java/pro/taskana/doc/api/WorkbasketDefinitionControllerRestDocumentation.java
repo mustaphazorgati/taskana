@@ -41,8 +41,7 @@ class WorkbasketDefinitionControllerRestDocumentation extends BaseRestDocumentat
         .perform(
             RestDocumentationRequestBuilders.get(
                     restHelper.toUrl(Mapping.URL_WORKBASKET_DEFINITIONS))
-                .accept("application/json")
-                .header("Authorization", TEAMLEAD_1_CREDENTIALS))
+                .headers(restHelper.getHeadersTeamLead1()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(
             MockMvcRestDocumentation.document(
@@ -67,7 +66,7 @@ class WorkbasketDefinitionControllerRestDocumentation extends BaseRestDocumentat
         .perform(
             multipart(restHelper.toUrl(Mapping.URL_WORKBASKET_DEFINITIONS))
                 .file("file", definitionString.getBytes(UTF_8))
-                .header("Authorization", TEAMLEAD_1_CREDENTIALS))
+                .headers(restHelper.getHeadersTeamLead1()))
         .andExpect(MockMvcResultMatchers.status().isNoContent())
         .andDo(
             document(

@@ -2,26 +2,32 @@ package pro.taskana.doc.api;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import pro.taskana.classification.rest.models.ClassificationSummaryRepresentationModelFieldDescriptors;
 import pro.taskana.common.rest.Mapping;
+import pro.taskana.common.rest.models.PagingFieldDescriptors;
 import pro.taskana.common.test.doc.api.BaseRestDocumentation;
+import pro.taskana.common.test.rest.RestHelper;
 
 /** Generate REST Dokumentation for ClassificationController. */
 class ClassificationControllerRestDocumentation extends BaseRestDocumentation {
@@ -85,43 +91,11 @@ class ClassificationControllerRestDocumentation extends BaseRestDocumentation {
     allClassificationsFieldDescriptors =
         new FieldDescriptor[] {
           subsectionWithPath("classifications")
-              .description("An Array of <<classification-subset, Classification-Subsets>>"),
-          fieldWithPath("_links.self.href").ignored(),
+              .description("An Array of <<classification-subset, Classification-Subsets>>")
         };
 
     classificationFieldDescriptors =
-        new FieldDescriptor[] {
-          fieldWithPath("classificationId")
-              .description(classificationFieldDescriptionsMap.get("classificationId")),
-          fieldWithPath("key").description(classificationFieldDescriptionsMap.get("key")),
-          fieldWithPath("parentId").description(classificationFieldDescriptionsMap.get("parentId")),
-          fieldWithPath("parentKey")
-              .description(classificationFieldDescriptionsMap.get("parentKey")),
-          fieldWithPath("category").description(classificationFieldDescriptionsMap.get("category")),
-          fieldWithPath("type").description(classificationFieldDescriptionsMap.get("type")),
-          fieldWithPath("domain").description(classificationFieldDescriptionsMap.get("domain")),
-          fieldWithPath("isValidInDomain")
-              .description(classificationFieldDescriptionsMap.get("isValidInDomain")),
-          fieldWithPath("created").description(classificationFieldDescriptionsMap.get("created")),
-          fieldWithPath("modified").description(classificationFieldDescriptionsMap.get("modified")),
-          fieldWithPath("name").description(classificationFieldDescriptionsMap.get("name")),
-          fieldWithPath("description")
-              .description(classificationFieldDescriptionsMap.get("description")),
-          fieldWithPath("priority").description(classificationFieldDescriptionsMap.get("priority")),
-          fieldWithPath("serviceLevel")
-              .description(classificationFieldDescriptionsMap.get("serviceLevel")),
-          fieldWithPath("applicationEntryPoint")
-              .description(classificationFieldDescriptionsMap.get("applicationEntryPoint")),
-          fieldWithPath("custom1").description(classificationFieldDescriptionsMap.get("custom1")),
-          fieldWithPath("custom2").description(classificationFieldDescriptionsMap.get("custom2")),
-          fieldWithPath("custom3").description(classificationFieldDescriptionsMap.get("custom3")),
-          fieldWithPath("custom4").description(classificationFieldDescriptionsMap.get("custom4")),
-          fieldWithPath("custom5").description(classificationFieldDescriptionsMap.get("custom5")),
-          fieldWithPath("custom6").description(classificationFieldDescriptionsMap.get("custom6")),
-          fieldWithPath("custom7").description(classificationFieldDescriptionsMap.get("custom7")),
-          fieldWithPath("custom8").description(classificationFieldDescriptionsMap.get("custom8")),
-          fieldWithPath("_links.self.href").ignored()
-        };
+        new FieldDescriptor[] {fieldWithPath("_links.self.href").ignored()};
 
     classificationSubsetFieldDescriptors =
         new FieldDescriptor[] {
@@ -251,14 +225,17 @@ class ClassificationControllerRestDocumentation extends BaseRestDocumentation {
     this.mockMvc
         .perform(
             RestDocumentationRequestBuilders.get(
-                    restHelper.toUrl(Mapping.URL_CLASSIFICATIONS) + "?domain=DOMAIN_B")
-                .accept("application/hal+json")
-                .header("Authorization", TEAMLEAD_1_CREDENTIALS))
+                    Mapping.URL_CLASSIFICATIONS + "?domain=DOMAIN_B")
+                .headers(restHelper.getHeadersTeamLead1()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(
-            MockMvcRestDocumentation.document(
+            document(
                 "GetAllClassificationsDocTest",
-                responseFields(allClassificationsFieldDescriptors)));
+                PagingFieldDescriptors.PAGING_LINKS,
+                requestParameters(
+                    parameterWithName("domain").description("this is a test").optional(),
+                    parameterWithName("test").description("bla bla").optional()),
+                responseFields(allClassificationsFieldDescriptors).and(subsectionWithPath("_links").ignored())));
   }
 
   @Test
@@ -268,12 +245,15 @@ class ClassificationControllerRestDocumentation extends BaseRestDocumentation {
             RestDocumentationRequestBuilders.get(
                     restHelper.toUrl(
                         Mapping.URL_CLASSIFICATIONS_ID, "CLI:100000000000000000000000000000000009"))
-                .header("Authorization", TEAMLEAD_1_CREDENTIALS))
+                .headers(restHelper.getHeadersTeamLead1()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(
-            MockMvcRestDocumentation.document(
+            document(
                 "GetSpecificClassificationDocTest",
-                responseFields(classificationFieldDescriptors)));
+                responseFields(
+                    merge(
+                        Arrays.asList(classificationFieldDescriptors),
+                        ClassificationSummaryRepresentationModelFieldDescriptors.FIELDS))));
   }
 
   @Test
@@ -283,11 +263,10 @@ class ClassificationControllerRestDocumentation extends BaseRestDocumentation {
             RestDocumentationRequestBuilders.get(
                     restHelper.toUrl(
                         Mapping.URL_CLASSIFICATIONS_ID, "CLI:100000000000000000000000000000000009"))
-                .header("Authorization", TEAMLEAD_1_CREDENTIALS))
+                .headers(restHelper.getHeadersTeamLead1()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(
-            MockMvcRestDocumentation.document(
-                "ClassificationSubset", responseFields(classificationSubsetFieldDescriptors)));
+            document("ClassificationSubset", responseFields(classificationSubsetFieldDescriptors)));
   }
 
   @Test
@@ -296,12 +275,11 @@ class ClassificationControllerRestDocumentation extends BaseRestDocumentation {
         this.mockMvc
             .perform(
                 RestDocumentationRequestBuilders.post(restHelper.toUrl(Mapping.URL_CLASSIFICATIONS))
-                    .contentType("application/hal+json")
-                    .content("{\"key\":\"Key0815casdgdgh\", \"domain\":\"DOMAIN_B\"}")
-                    .header("Authorization", TEAMLEAD_1_CREDENTIALS))
+                    .headers(restHelper.getHeadersTeamLead1())
+                    .content("{\"key\":\"Key0815casdgdgh\", \"domain\":\"DOMAIN_B\"}"))
             .andExpect(MockMvcResultMatchers.status().isCreated())
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "CreateClassificationDocTest",
                     requestFields(createClassificationFieldDescriptors),
                     responseFields(classificationFieldDescriptors)))
@@ -314,9 +292,9 @@ class ClassificationControllerRestDocumentation extends BaseRestDocumentation {
         .perform(
             RestDocumentationRequestBuilders.delete(
                     restHelper.toUrl(Mapping.URL_CLASSIFICATIONS_ID, newId))
-                .header("Authorization", TEAMLEAD_1_CREDENTIALS))
+                .headers(restHelper.getHeadersTeamLead1()))
         .andExpect(MockMvcResultMatchers.status().isNoContent())
-        .andDo(MockMvcRestDocumentation.document("DeleteClassificationDocTest"));
+        .andDo(document("DeleteClassificationDocTest"));
   }
 
   @Test
@@ -327,7 +305,7 @@ class ClassificationControllerRestDocumentation extends BaseRestDocumentation {
                 Mapping.URL_CLASSIFICATIONS_ID, "CLI:100000000000000000000000000000000009"));
     HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("GET");
-    con.setRequestProperty("Authorization", TEAMLEAD_1_CREDENTIALS);
+    con.setRequestProperty("Authorization", RestHelper.AUTHORIZATION_TEAM_LEAD_1);
     assertEquals(200, con.getResponseCode());
 
     BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream(), UTF_8));
@@ -345,12 +323,11 @@ class ClassificationControllerRestDocumentation extends BaseRestDocumentation {
             RestDocumentationRequestBuilders.put(
                     restHelper.toUrl(
                         Mapping.URL_CLASSIFICATIONS_ID, "CLI:100000000000000000000000000000000009"))
-                .header("Authorization", TEAMLEAD_1_CREDENTIALS)
-                .contentType("application/json")
+                .headers(restHelper.getHeadersTeamLead1())
                 .content(modifiedTask))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(
-            MockMvcRestDocumentation.document(
+            document(
                 "UpdateClassificationDocTest",
                 requestFields(classificationFieldDescriptors),
                 responseFields(classificationFieldDescriptors)));

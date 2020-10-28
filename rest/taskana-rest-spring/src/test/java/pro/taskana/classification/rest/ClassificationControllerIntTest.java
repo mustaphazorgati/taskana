@@ -132,7 +132,7 @@ class ClassificationControllerIntTest {
         template.exchange(
             restHelper.toUrl(Mapping.URL_CLASSIFICATIONS),
             HttpMethod.POST,
-            new HttpEntity<>(newClassification, restHelper.getHeadersTeamlead_1()),
+            new HttpEntity<>(newClassification, restHelper.getHeadersTeamLead1()),
             ParameterizedTypeReference.forType(ClassificationRepresentationModel.class));
 
     assertThat(responseEntity).isNotNull();
@@ -147,7 +147,7 @@ class ClassificationControllerIntTest {
         template.exchange(
             restHelper.toUrl(Mapping.URL_CLASSIFICATIONS),
             HttpMethod.POST,
-            new HttpEntity<>(newClassification, restHelper.getHeadersTeamlead_1()),
+            new HttpEntity<>(newClassification, restHelper.getHeadersTeamLead1()),
             ParameterizedTypeReference.forType(ClassificationRepresentationModel.class));
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -188,7 +188,7 @@ class ClassificationControllerIntTest {
         template.exchange(
             restHelper.toUrl(Mapping.URL_CLASSIFICATIONS),
             HttpMethod.POST,
-            new HttpEntity<>(newClassification, restHelper.getHeadersTeamlead_1()),
+            new HttpEntity<>(newClassification, restHelper.getHeadersTeamLead1()),
             ParameterizedTypeReference.forType(ClassificationRepresentationModel.class));
 
     assertThat(responseEntity).isNotNull();
@@ -208,7 +208,7 @@ class ClassificationControllerIntTest {
         template.exchange(
             restHelper.toUrl(Mapping.URL_CLASSIFICATIONS),
             HttpMethod.POST,
-            new HttpEntity<>(newClassification, restHelper.getHeadersTeamlead_1()),
+            new HttpEntity<>(newClassification, restHelper.getHeadersTeamLead1()),
             ParameterizedTypeReference.forType(ClassificationRepresentationModel.class));
 
     assertThat(responseEntity).isNotNull();
@@ -227,7 +227,7 @@ class ClassificationControllerIntTest {
         template.exchange(
             restHelper.toUrl(Mapping.URL_CLASSIFICATIONS),
             HttpMethod.POST,
-            new HttpEntity<>(newClassification, restHelper.getHeadersTeamlead_1()),
+            new HttpEntity<>(newClassification, restHelper.getHeadersTeamLead1()),
             ParameterizedTypeReference.forType(ClassificationRepresentationModel.class));
 
     assertThat(responseEntity).isNotNull();

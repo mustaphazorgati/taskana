@@ -136,7 +136,7 @@ class WorkbasketControllerIntTest {
         TEMPLATE.exchange(
             restHelper.toUrl(Mapping.URL_WORKBASKET_ID, workbasketId),
             HttpMethod.GET,
-            new HttpEntity<String>(restHelper.getHeadersTeamlead_1()),
+            new HttpEntity<String>(restHelper.getHeadersTeamLead1()),
             ParameterizedTypeReference.forType(WorkbasketRepresentationModel.class));
 
     WorkbasketRepresentationModel workbasketRepresentationModel =
@@ -155,7 +155,7 @@ class WorkbasketControllerIntTest {
           TEMPLATE.exchange(
               restHelper.toUrl(Mapping.URL_WORKBASKET_ID, workbasketId),
               HttpMethod.PUT,
-              new HttpEntity<>(workbasketRepresentationModel, restHelper.getHeadersTeamlead_1()),
+              new HttpEntity<>(workbasketRepresentationModel, restHelper.getHeadersTeamLead1()),
               ParameterizedTypeReference.forType(WorkbasketRepresentationModel.class));
         };
     assertThatThrownBy(httpCall)

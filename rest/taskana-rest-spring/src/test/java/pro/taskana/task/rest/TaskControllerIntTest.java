@@ -257,7 +257,7 @@ class TaskControllerIntTest {
           TEMPLATE.exchange(
               restHelper.toUrl(Mapping.URL_TASKS),
               HttpMethod.POST,
-              new HttpEntity<>(taskRepresentationModel, restHelper.getHeadersTeamlead_1()),
+              new HttpEntity<>(taskRepresentationModel, restHelper.getHeadersTeamLead1()),
               TASK_MODEL_TYPE);
         };
 
@@ -277,7 +277,7 @@ class TaskControllerIntTest {
           TEMPLATE.exchange(
               restHelper.toUrl(Mapping.URL_TASKS),
               HttpMethod.POST,
-              new HttpEntity<>(taskRepresentationModel, restHelper.getHeadersTeamlead_1()),
+              new HttpEntity<>(taskRepresentationModel, restHelper.getHeadersTeamLead1()),
               TASK_MODEL_TYPE);
         };
 
@@ -297,7 +297,7 @@ class TaskControllerIntTest {
           TEMPLATE.exchange(
               restHelper.toUrl(Mapping.URL_TASKS),
               HttpMethod.POST,
-              new HttpEntity<>(taskRepresentationModel, restHelper.getHeadersTeamlead_1()),
+              new HttpEntity<>(taskRepresentationModel, restHelper.getHeadersTeamLead1()),
               TASK_MODEL_TYPE);
         };
 
@@ -545,7 +545,7 @@ class TaskControllerIntTest {
     // ClassificationControllerIntTest.testGetQueryByPorSecondPageSortedByType changes
     // tasks and this test depends on the tasks as they are in sampledata
 
-    HttpEntity<String> request = new HttpEntity<>(restHelper.getHeadersTeamlead_1());
+    HttpEntity<String> request = new HttpEntity<>(restHelper.getHeadersTeamLead1());
     ResponseEntity<TaskanaPagedModel<TaskSummaryRepresentationModel>> response =
         TEMPLATE.exchange(
             restHelper.toUrl(Mapping.URL_TASKS) + "?sort-by=due&order=desc",
@@ -582,7 +582,7 @@ class TaskControllerIntTest {
     // ClassificationControllerIntTest.testGetQueryByPorSecondPageSortedByType changes
     // tasks and this test depends on the tasks as they are in sampledata
 
-    HttpEntity<String> request = new HttpEntity<>(restHelper.getHeadersTeamlead_1());
+    HttpEntity<String> request = new HttpEntity<>(restHelper.getHeadersTeamLead1());
     ResponseEntity<TaskanaPagedModel<TaskSummaryRepresentationModel>> response =
         TEMPLATE.exchange(
             restHelper.toUrl(Mapping.URL_TASKS)
@@ -631,7 +631,7 @@ class TaskControllerIntTest {
         template.exchange(
             restHelper.toUrl(Mapping.URL_TASKS_ID, "TKI:100000000000000000000000000000000000"),
             HttpMethod.GET,
-            new HttpEntity<>(restHelper.getHeadersTeamlead_1()),
+            new HttpEntity<>(restHelper.getHeadersTeamLead1()),
             TASK_MODEL_TYPE);
 
     final TaskRepresentationModel originalTask = responseGet.getBody();
@@ -640,7 +640,7 @@ class TaskControllerIntTest {
         template.exchange(
             restHelper.toUrl(Mapping.URL_TASKS_ID, "TKI:100000000000000000000000000000000000"),
             HttpMethod.PUT,
-            new HttpEntity<>(originalTask, restHelper.getHeadersTeamlead_1()),
+            new HttpEntity<>(originalTask, restHelper.getHeadersTeamLead1()),
             TASK_MODEL_TYPE);
 
     TaskRepresentationModel updatedTask = responseUpdate.getBody();
@@ -657,7 +657,7 @@ class TaskControllerIntTest {
         TEMPLATE.exchange(
             restHelper.toUrl(Mapping.URL_TASKS),
             HttpMethod.POST,
-            new HttpEntity<>(taskRepresentationModel, restHelper.getHeadersTeamlead_1()),
+            new HttpEntity<>(taskRepresentationModel, restHelper.getHeadersTeamLead1()),
             TASK_MODEL_TYPE);
     assertThat(responseCreate.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     assertThat(responseCreate.getBody()).isNotNull();
@@ -711,7 +711,7 @@ class TaskControllerIntTest {
     HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("POST");
     con.setDoOutput(true);
-    con.setRequestProperty("Authorization", RestHelper.AUTHORIZATION_TEAMLEAD_1);
+    con.setRequestProperty("Authorization", RestHelper.AUTHORIZATION_TEAM_LEAD_1);
     con.setRequestProperty("Content-Type", "application/json");
     BufferedWriter out = new BufferedWriter(new OutputStreamWriter(con.getOutputStream(), UTF_8));
     out.write(taskToCreateJson);
@@ -731,7 +731,7 @@ class TaskControllerIntTest {
     con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("POST");
     con.setDoOutput(true);
-    con.setRequestProperty("Authorization", RestHelper.AUTHORIZATION_TEAMLEAD_1);
+    con.setRequestProperty("Authorization", RestHelper.AUTHORIZATION_TEAM_LEAD_1);
     con.setRequestProperty("Content-Type", "application/json");
     out = new BufferedWriter(new OutputStreamWriter(con.getOutputStream(), UTF_8));
     out.write(taskToCreateJson2);

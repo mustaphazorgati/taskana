@@ -1,4 +1,4 @@
-package pro.taskana.doc.api;
+package pro.taskana.common.rest;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -12,7 +12,6 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import pro.taskana.common.rest.Mapping;
 import pro.taskana.common.test.doc.api.BaseRestDocumentation;
 
 /** Generate Rest Docu for AbstractPagingController. */
@@ -33,8 +32,8 @@ class AbstractPagingControllerRestDocumentation extends BaseRestDocumentation {
     pagingFieldDescriptionsMap.put("page.number", "Current page number");
     pagingFieldDescriptionsMap.put("_links.first.href", "Link to first page");
     pagingFieldDescriptionsMap.put("_links.last.href", "Link to last page");
-    pagingFieldDescriptionsMap.put("_links.prev.href", "Link to previous page");
     pagingFieldDescriptionsMap.put("_links.next.href", "Link to next page");
+    pagingFieldDescriptionsMap.put("_links.prev.href", "Link to previous page");
 
     pagingFieldDescriptors =
         new FieldDescriptor[] {
@@ -62,11 +61,11 @@ class AbstractPagingControllerRestDocumentation extends BaseRestDocumentation {
 
   @Test
   void commonSummaryResourceFieldsDocTest() throws Exception {
-    this.mockMvc
+    mockMvc
         .perform(
             RestDocumentationRequestBuilders.get(
                     restHelper.toUrl(Mapping.URL_CLASSIFICATIONS) + "?page=2&page-size=5")
-                .header("Authorization", TEAMLEAD_1_CREDENTIALS))
+                .headers(restHelper.getHeadersTeamLead1()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(
             MockMvcRestDocumentation.document(

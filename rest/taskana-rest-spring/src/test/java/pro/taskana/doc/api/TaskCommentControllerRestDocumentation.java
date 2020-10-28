@@ -14,7 +14,6 @@ import java.net.URL;
 import java.util.HashMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.FieldDescriptor;
@@ -24,6 +23,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import pro.taskana.common.rest.Mapping;
 import pro.taskana.common.rest.models.TaskanaPagedModelKeys;
 import pro.taskana.common.test.doc.api.BaseRestDocumentation;
+import pro.taskana.common.test.rest.RestHelper;
 
 class TaskCommentControllerRestDocumentation extends BaseRestDocumentation {
 
@@ -97,8 +97,7 @@ class TaskCommentControllerRestDocumentation extends BaseRestDocumentation {
             RestDocumentationRequestBuilders.get(
                     restHelper.toUrl(
                         Mapping.URL_TASK_COMMENTS, "TKI:000000000000000000000000000000000000"))
-                .accept(MediaTypes.HAL_JSON)
-                .header("Authorization", ADMIN_CREDENTIALS))
+                .headers(restHelper.getHeadersAdmin()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(
             MockMvcRestDocumentation.document(
@@ -108,17 +107,9 @@ class TaskCommentControllerRestDocumentation extends BaseRestDocumentation {
 
   @Test
   void getSpecificTaskCommentDocTest() throws Exception {
-    this.mockMvc
-        .perform(
-            RestDocumentationRequestBuilders.get(
-                    restHelper.toUrl(
-                        Mapping.URL_TASK_COMMENT, "TCI:000000000000000000000000000000000000"))
-                .accept(MediaTypes.HAL_JSON)
-                .header("Authorization", ADMIN_CREDENTIALS))
-        .andExpect(MockMvcResultMatchers.status().isOk())
-        .andDo(
-            MockMvcRestDocumentation.document(
-                "GetSpecificTaskCommentDocTest", responseFields(taskCommentFieldDescriptors)));
+    documentTestForGetRequest(
+        restHelper.toUrl(Mapping.URL_TASK_COMMENT, "TCI:000000000000000000000000000000000000"),
+        taskCommentFieldDescriptors);
   }
 
   @Test
@@ -129,7 +120,7 @@ class TaskCommentControllerRestDocumentation extends BaseRestDocumentation {
 
     HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("GET");
-    con.setRequestProperty("Authorization", ADMIN_CREDENTIALS);
+    con.setRequestProperty("Authorization", RestHelper.AUTHORIZATION_ADMIN);
     assertEquals(200, con.getResponseCode());
 
     BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream(), UTF_8));
@@ -149,8 +140,7 @@ class TaskCommentControllerRestDocumentation extends BaseRestDocumentation {
             RestDocumentationRequestBuilders.put(
                     restHelper.toUrl(
                         Mapping.URL_TASK_COMMENT, "TCI:000000000000000000000000000000000000"))
-                .header("Authorization", ADMIN_CREDENTIALS)
-                .contentType(MediaTypes.HAL_JSON)
+                .headers(restHelper.getHeadersAdmin())
                 .content(modifiedTaskComment))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(
@@ -173,9 +163,8 @@ class TaskCommentControllerRestDocumentation extends BaseRestDocumentation {
                 RestDocumentationRequestBuilders.post(
                         restHelper.toUrl(
                             Mapping.URL_TASK_COMMENTS, "TKI:000000000000000000000000000000000000"))
-                    .contentType(MediaTypes.HAL_JSON)
-                    .content(createTaskCommentContent)
-                    .header("Authorization", ADMIN_CREDENTIALS))
+                    .headers(restHelper.getHeadersAdmin())
+                    .content(createTaskCommentContent))
             .andExpect(MockMvcResultMatchers.status().isCreated())
             .andDo(
                 MockMvcRestDocumentation.document(
@@ -192,7 +181,7 @@ class TaskCommentControllerRestDocumentation extends BaseRestDocumentation {
         .perform(
             RestDocumentationRequestBuilders.delete(
                     restHelper.toUrl(Mapping.URL_TASK_COMMENT, newId))
-                .header("Authorization", ADMIN_CREDENTIALS)) // admin
+                .headers(restHelper.getHeadersAdmin()))
         .andExpect(MockMvcResultMatchers.status().isNoContent())
         .andDo(MockMvcRestDocumentation.document("DeleteTaskCommentDocTest"));
   }

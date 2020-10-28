@@ -29,7 +29,7 @@ use of HTTP verbs.
 | Used to update a resource
 
 | `DELTE`
-| Used to delete a existing resource
+| Used to delete an existing resource
 |===
 
 == HTTP status codes
@@ -67,7 +67,7 @@ use of HTTP status codes.
 | `405 Method not allowed`
 | The method used in this request is can not be used on this resource.
 
-| `406` Not acceptable
+| `406 Not acceptable`
 | Wrong content-type in request header.
 
 | `409 Conflict`
@@ -77,14 +77,13 @@ use of HTTP status codes.
 | The content of the request can't be understood due to being in an unsupported media-type.
 
 | `423 Locked`
-| The resource is currently locked and cannot be modified.
+| A different process is currently blocking the requested resource and thus it cannot be modified.
 |===
 
 == Common Fields
 
-Taskana uses Spring HATEOAS to achive the best possible REST-conformity. +
-In HATEOAS every response contains a map named *_links* in which the links for navigation are included. +
-If a resource has embedded resources these are found in a map named *_embedded*.
+Taskana uses Spring HATEOAS to achieve the best possible REST-conformity. +
+In HATEOAS every entity contains an object *_links*. Links for navigation are found within that object.
 
 === Response Fields common to all Resources
 
@@ -365,7 +364,7 @@ A `GET` request is used to retrieve a task comment.
 
 ==== Example Request
 
-include::{snippets}/GetSpecificTaskCommentDocTest/http-request.adoc[]
+= include::{snippets}/task-comment-controller-rest-documentation/get-specific-task-comment-doc-test/http-request.adoc[]
 
 ==== Example Response
 
@@ -438,6 +437,10 @@ This resource provides the entry point with classifications.
 === Get a list of all classifications
 
 A `GET` request is used to retrieve a classification summary.
+
+==== Parameters
+
+include::{snippets}/GetAllClassificationsDocTest/request-parameters.adoc[]
 
 ==== Example Request
 

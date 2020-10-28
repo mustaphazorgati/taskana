@@ -39,8 +39,7 @@ class ClassificationDefinitionControllerRestDocumentation extends BaseRestDocume
         .perform(
             RestDocumentationRequestBuilders.get(
                     restHelper.toUrl(Mapping.URL_CLASSIFICATIONDEFINITIONS))
-                .accept("application/json")
-                .header("Authorization", TEAMLEAD_1_CREDENTIALS))
+                .headers(restHelper.getHeadersTeamLead1()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(
             MockMvcRestDocumentation.document(
@@ -57,7 +56,7 @@ class ClassificationDefinitionControllerRestDocumentation extends BaseRestDocume
         .perform(
             multipart(restHelper.toUrl(Mapping.URL_CLASSIFICATIONDEFINITIONS))
                 .file("file", definitionString.getBytes(UTF_8))
-                .header("Authorization", TEAMLEAD_1_CREDENTIALS))
+                .headers(restHelper.getHeadersTeamLead1()))
         .andExpect(MockMvcResultMatchers.status().isNoContent())
         .andDo(
             document(

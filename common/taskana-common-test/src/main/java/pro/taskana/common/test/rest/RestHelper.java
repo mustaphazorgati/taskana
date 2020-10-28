@@ -22,9 +22,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Component
 public class RestHelper {
 
-  public static final String AUTHORIZATION_TEAMLEAD_1 = "Basic dGVhbWxlYWQtMTp0ZWFtbGVhZC0x";
+  public static final String AUTHORIZATION_TEAM_LEAD_1 = "Basic dGVhbWxlYWQtMTp0ZWFtbGVhZC0x";
   public static final String AUTHORIZATION_ADMIN = "Basic YWRtaW46YWRtaW4=";
-  public static final String AUTHORIZATION_BUSINESSADMIN =
+  public static final String AUTHORIZATION_BUSINESS_ADMIN =
       "Basic YnVzaW5lc3NhZG1pbjpidXNpbmVzc2FkbWlu";
   public static final String AUTHORIZATION_USER_1_1 = "Basic dXNlci0xLTE6dXNlci0xLTE=";
   public static final String AUTHORIZATION_USER_1_2 = "Basic dXNlci0xLTI6dXNlci0xLTI=";
@@ -51,12 +51,12 @@ public class RestHelper {
   }
 
   public HttpEntity<String> defaultRequest() {
-    return new HttpEntity<>(getHeadersTeamlead_1());
+    return new HttpEntity<>(getHeadersTeamLead1());
   }
 
-  public HttpHeaders getHeadersTeamlead_1() {
+  public HttpHeaders getHeadersTeamLead1() {
     HttpHeaders headers = new HttpHeaders();
-    headers.add("Authorization", AUTHORIZATION_TEAMLEAD_1);
+    headers.add("Authorization", AUTHORIZATION_TEAM_LEAD_1);
     headers.add("Content-Type", "application/json");
     return headers;
   }
@@ -70,7 +70,7 @@ public class RestHelper {
 
   public HttpHeaders getHeadersBusinessAdmin() {
     HttpHeaders headers = new HttpHeaders();
-    headers.add("Authorization", AUTHORIZATION_BUSINESSADMIN);
+    headers.add("Authorization", AUTHORIZATION_BUSINESS_ADMIN);
     headers.add("Content-Type", "application/hal+json");
     return headers;
   }

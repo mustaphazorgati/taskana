@@ -60,7 +60,7 @@ class AsyncUpdateJobIntTest {
         TEMPLATE.exchange(
             restHelper.toUrl(Mapping.URL_CLASSIFICATIONS_ID, CLASSIFICATION_ID),
             HttpMethod.GET,
-            new HttpEntity<String>(restHelper.getHeadersTeamlead_1()),
+            new HttpEntity<String>(restHelper.getHeadersTeamLead1()),
             ParameterizedTypeReference.forType(ClassificationRepresentationModel.class));
 
     assertThat(response.getBody()).isNotNull();
@@ -75,7 +75,7 @@ class AsyncUpdateJobIntTest {
     TEMPLATE.exchange(
         restHelper.toUrl(Mapping.URL_CLASSIFICATIONS_ID, CLASSIFICATION_ID),
         HttpMethod.PUT,
-        new HttpEntity<>(classification, restHelper.getHeadersTeamlead_1()),
+        new HttpEntity<>(classification, restHelper.getHeadersTeamLead1()),
         ParameterizedTypeReference.forType(ClassificationRepresentationModel.class));
 
     // trigger jobs twice to refresh all entries. first entry on the first call and follow up on the
@@ -88,7 +88,7 @@ class AsyncUpdateJobIntTest {
         TEMPLATE.exchange(
             restHelper.toUrl(Mapping.URL_CLASSIFICATIONS_ID, CLASSIFICATION_ID),
             HttpMethod.GET,
-            new HttpEntity<String>(restHelper.getHeadersTeamlead_1()),
+            new HttpEntity<String>(restHelper.getHeadersTeamLead1()),
             ParameterizedTypeReference.forType(ClassificationRepresentationModel.class));
 
     assertThat(repeatedResponse.getBody()).isNotNull();
