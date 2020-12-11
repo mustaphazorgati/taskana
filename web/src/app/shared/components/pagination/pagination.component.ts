@@ -82,7 +82,6 @@ export class PaginationComponent implements OnInit, OnChanges {
 
   filter(filterVal) {
     const filterValue = filterVal.toString();
-    console.log(filterValue);
     this.filteredPages = this.pageNumbers.map(String).filter((value) => value.includes(filterValue));
   }
 }
