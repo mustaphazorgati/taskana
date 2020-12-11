@@ -64,6 +64,7 @@ export class PaginationComponent implements OnInit, OnChanges {
       this.pageSelected -= 1;
     }
     this.changePage.emit(currentPageIndex + 1);
+    this.value = this.pageSelected;
   }
 
   updateGoto() {
@@ -81,6 +82,7 @@ export class PaginationComponent implements OnInit, OnChanges {
 
   filter(filterVal) {
     const filterValue = filterVal.toString();
+    console.log(filterValue);
     this.filteredPages = this.pageNumbers.map(String).filter((value) => value.includes(filterValue));
   }
 }
