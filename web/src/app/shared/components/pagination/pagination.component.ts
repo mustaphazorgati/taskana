@@ -1,4 +1,14 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 import { Page } from 'app/shared/models/page';
 import { MatPaginator } from '@angular/material/paginator';
 
@@ -17,11 +27,16 @@ export class PaginationComponent implements OnInit, OnChanges {
   @Input()
   numberOfItems: number;
 
+  @Input()
+  expanded: boolean = true;
+
   @Output()
   changePage = new EventEmitter<number>();
 
   @ViewChild(MatPaginator, { static: true })
   paginator: MatPaginator;
+
+  @ViewChild('pagination') paginationWrapper: ElementRef;
 
   hasItems = true;
   pageSelected = 1;
@@ -29,6 +44,32 @@ export class PaginationComponent implements OnInit, OnChanges {
   filteredPages: string[] = [];
 
   ngOnInit() {
+    this.changeLabel();
+  }
+  
+  ngOnChanges(changes: SimpleChanges): void {
+    const rangeLabel = this.paginationWrapper?.nativeElement?.querySelector('.mat-paginator-range-label');
+    const container = this.paginationWrapper?.nativeElement?.querySelector('.mat-paginator-container');
+    if (rangeLabel && container) {
+      if (!this.expanded) {
+        container.style.justifyContent = 'center';
+        rangeLabel.style.display = 'none';
+      } else {
+        container.style.justifyContent = 'flex-end';
+        rangeLabel.style.display = 'block';
+      }
+    }
+
+    if (changes.page && changes.page.currentValue) {
+      this.pageSelected = changes.page.currentValue.number;
+    }
+    this.hasItems = this.numberOfItems > 0;
+    if (changes.page) {
+      this.updateGoto();
+    }
+  }
+
+  changeLabel() {
     // Custom label: EG. "1-7 of 21 workbaskets"
     // return `${start} - ${end} of ${length} workbaskets`;
 
@@ -44,15 +85,6 @@ export class PaginationComponent implements OnInit, OnChanges {
       }
     };
     this.pageSelected = 1;
-  }
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.page && changes.page.currentValue) {
-      this.pageSelected = changes.page.currentValue.number;
-    }
-    this.hasItems = this.numberOfItems > 0;
-    if (changes.page) {
-      this.updateGoto();
-    }
   }
 
   changeToPage(event) {
