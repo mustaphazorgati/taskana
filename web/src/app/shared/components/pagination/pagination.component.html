@@ -4,8 +4,8 @@
   <div class="pagination__go-to">
     <div class="pagination__go-to-label">Page: </div>
     <mat-form-field>
-      <input #inputTypeAhead matInput type="text" [matAutocomplete]="auto" [(ngModel)]="value" name="accessId"
-        (ngModelChange)="filter(value)" (focus)="filter(value)" />
+      <input #inputTypeAhead matInput type="text" [matAutocomplete]="auto" [(ngModel)]="pageSelected" name="accessId"
+        (ngModelChange)="filter(pageSelected)" (focus)="filter(pageSelected)" />
       <mat-autocomplete #autoComplete autoActiveFirstOption (optionSelected)="goToPage($event.option.value)"
         #auto="matAutocomplete">
         <mat-option *ngFor="let pageNumber of filteredPages" [value]="pageNumber">{{ pageNumber }}</mat-option>
