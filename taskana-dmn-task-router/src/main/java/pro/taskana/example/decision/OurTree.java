@@ -8,30 +8,30 @@ import weka.classifiers.trees.j48.ClassifierTree;
 
 public class OurTree extends J48 {
 
-  public List<Decision> linearizeTree() throws Exception {
-    List<Decision> result = new ArrayList<>();
-    List<Rule> path = new ArrayList<>();
+  public List<OurDecision> linearizeTree() {
+    List<OurDecision> result = new ArrayList<>();
+    List<OurRule> path = new ArrayList<>();
     visitNode(m_root, path, result);
     return result;
   }
 
-  private void visitNode(ClassifierTree node, List<Rule> path, List<Decision> decisions) {
+  private void visitNode(ClassifierTree node, List<OurRule> path, List<OurDecision> decisions) {
     if (node.isLeaf()) {
-      Decision decision = new Decision(path, node.getLocalModel().distribution().maxClass());
+      OurDecision decision = new OurDecision(path, node.getLocalModel().distribution().maxClass());
       decisions.add(decision);
       System.out.printf("I'm at an leaf: %s%n", decision);
     } else {
       for (int i = 0; i < node.getSons().length; i++) {
-        ArrayList<Rule> decentPath = new ArrayList<>(path);
+        ArrayList<OurRule> decentPath = new ArrayList<>(path);
         decentPath.add(buildRuleFromNode(node, i));
         visitNode(node.getSons()[i], decentPath, decisions);
       }
     }
   }
 
-  private Rule buildRuleFromNode(ClassifierTree node, int index) {
+  private OurRule buildRuleFromNode(ClassifierTree node, int index) {
     if (node.getLocalModel() instanceof C45Split) {
-      return new Rule(
+      return new OurRule(
           ((C45Split) node.getLocalModel()).attIndex(),
           ((C45Split) node.getLocalModel()).splitPoint(),
           index);

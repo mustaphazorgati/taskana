@@ -1,6 +1,6 @@
 package pro.taskana.example.decision;
 
-public class Rule {
+public class OurRule {
   private final int attribIndex;
   private final double splitPoint;
   private final int index;
@@ -14,7 +14,7 @@ public class Rule {
    *     split. For nominal attributes: index of the value
    *     (Instances.attribute(attribIndex).value(index))
    */
-  public Rule(int attribIndex, double splitPoint, int index) {
+  public OurRule(int attribIndex, double splitPoint, int index) {
     this.attribIndex = attribIndex;
     this.splitPoint = splitPoint;
     this.index = index;

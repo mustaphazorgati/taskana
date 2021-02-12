@@ -27,7 +27,7 @@ public class DmnTaskRoutingProvider implements TaskRoutingProvider {
     try (InputStream inputStream =
         DmnTaskRoutingProvider.class.getResourceAsStream("dmn-table.dmn")) {
       // parse decision from resource input stream
-      table = dmnEngine.parseDecision("example", inputStream);
+      table = dmnEngine.parseDecision("workbasketRouting", inputStream);
     } catch (IOException e) {
       throw new SystemException("Could not find file 'dmn-table.dmn'");
     }
