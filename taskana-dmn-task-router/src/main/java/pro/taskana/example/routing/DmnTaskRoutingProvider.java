@@ -1,4 +1,4 @@
-package pro.taskana.example;
+package pro.taskana.example.routing;
 
 import java.io.IOException;
 import java.io.InputStream;
