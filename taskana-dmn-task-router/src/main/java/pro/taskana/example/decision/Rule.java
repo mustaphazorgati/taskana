@@ -6,6 +6,8 @@ public class Rule {
   private final int index;
 
   /**
+   * Create a single Rule instace.
+   *
    * @param attribIndex which attribute was used for splitting
    * @param splitPoint at which value is the dataset split (only for numeric rules)
    * @param index index of the child. For numeric attributes: 0 --> attrib <= split, 1 --> attrib >

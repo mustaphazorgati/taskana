@@ -14,18 +14,6 @@
     <version>4.4.1-SNAPSHOT</version>
   </parent>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.camunda.bpm.dmn</groupId>
-        <artifactId>camunda-engine-dmn-bom</artifactId>
-        <version>${version.camunda}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
     <dependency>
       <groupId>pro.taskana</groupId>
@@ -42,11 +30,13 @@
     <dependency>
       <groupId>org.camunda.bpm.model</groupId>
       <artifactId>camunda-dmn-model</artifactId>
+      <version>${version.camunda}</version>
     </dependency>
 
     <dependency>
       <groupId>org.camunda.bpm.dmn</groupId>
       <artifactId>camunda-engine-dmn</artifactId>
+      <version>${version.camunda}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

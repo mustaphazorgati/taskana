@@ -1,6 +1,5 @@
 package pro.taskana.example.decision;
 
-import java.io.IOException;
 import java.util.List;
 import weka.core.Attribute;
 import weka.core.Instances;
@@ -40,14 +39,16 @@ public class TrainTree {
     List<Decision> decisions = classifier.linearizeTree();
 
     for (Decision d : decisions) {
-
       for (Rule r : d.getPath()) {
         Attribute a = dataSet.attribute(r.getAttribIndex());
         if (a.isNominal()) {
           System.out.println(a.name() + " == " + a.value(r.getIndex()));
         } else {
-          if (r.getIndex() == 0) System.out.println(a.name() + " <= " + r.getSplitPoint());
-          else System.out.println(a.name() + " > " + r.getSplitPoint());
+          if (r.getIndex() == 0) {
+            System.out.println(a.name() + " <= " + r.getSplitPoint());
+          } else {
+            System.out.println(a.name() + " > " + r.getSplitPoint());
+          }
         }
       }
       System.out.println("Decision: " + d.getClazz());
