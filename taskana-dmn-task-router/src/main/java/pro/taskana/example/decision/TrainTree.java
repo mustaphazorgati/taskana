@@ -4,13 +4,6 @@ import java.io.File;
 import java.util.List;
 import org.camunda.bpm.model.dmn.Dmn;
 import org.camunda.bpm.model.dmn.DmnModelInstance;
-import org.camunda.bpm.model.dmn.instance.Decision;
-import org.camunda.bpm.model.dmn.instance.DecisionTable;
-import org.camunda.bpm.model.dmn.instance.Definitions;
-import org.camunda.bpm.model.dmn.instance.Input;
-import org.camunda.bpm.model.dmn.instance.InputExpression;
-import org.camunda.bpm.model.dmn.instance.Output;
-import org.camunda.bpm.model.dmn.instance.Text;
 import weka.core.Attribute;
 import weka.core.Instances;
 import weka.core.converters.CSVLoader;
@@ -50,49 +43,32 @@ public class TrainTree {
 
     printDecisions(dataSet, decisions);
 
-    DmnModelInstance modelInstance = Dmn.createEmptyModel();
+    DmnModelInstance model =
+        new DmnBuilder()
+            .decisionTable("workbasketRouting", "Workbasket Routing")
+            .input(
+                "classificationName",
+                "string",
+                "task.classificationSummary.name",
+                "Classification name")
+            .output("string", "workbasketKey", "Workbasket key")
+            .output("string", "domain", "Domain")
+            .build();
 
-    Definitions definitions = modelInstance.newInstance(Definitions.class);
-    definitions.setNamespace("http://camunda.org/schema/1.0/dmn");
-    definitions.setName("definitions");
-    definitions.setId("definitions");
-    modelInstance.setDefinitions(definitions);
-
-    Decision decision = modelInstance.newInstance(Decision.class);
-    decision.setId("workbasketRouting");
-    decision.setName("Workbasket Routing");
-    definitions.addChildElement(decision);
-
-    DecisionTable decisionTable = modelInstance.newInstance(DecisionTable.class);
-    decisionTable.setId("DecisionTable_1pdawfb");
-    decision.addChildElement(decisionTable);
-
-    InputExpression inputExpression = modelInstance.newInstance(InputExpression.class);
-    inputExpression.setId("InputExpression_1");
-    inputExpression.setTypeRef("string");
-    Text text = modelInstance.newInstance(Text.class);
-    text.setTextContent("classificationName");
-    inputExpression.setText(text);
-
-    Input input = modelInstance.newInstance(Input.class);
-    input.setId("Input_1");
-    input.setLabel("Classification name");
-    input.addChildElement(inputExpression);
-    decisionTable.addChildElement(input);
-
-    Output output = modelInstance.newInstance(Output.class);
-    output.setId("Output_1");
-    output.setLabel("Workbasket Key");
-    output.setName("workbasketKey");
-    output.setTypeRef("string");
-    decisionTable.addChildElement(output);
-
-    Dmn.validateModel(modelInstance);
+    Dmn.validateModel(model);
 
     File file = new File("src/main/resources/pro/taskana/example/routing/test.dmn");
     file.createNewFile();
-    Dmn.writeModelToFile(file, modelInstance);
+    Dmn.writeModelToFile(file, model);
+  }
 
+  public static OurTree buildModel(Instances trainingDataSet) throws Exception {
+
+    OurTree classifier = new OurTree();
+
+    classifier.buildClassifier(trainingDataSet);
+
+    return classifier;
   }
 
   private static void printDecisions(Instances dataSet, List<OurDecision> decisions) {
@@ -112,14 +88,5 @@ public class TrainTree {
       System.out.println("Decision: " + d.getClazz());
       System.out.println("---------------\n");
     }
-  }
-
-  public static OurTree buildModel(Instances trainingDataSet) throws Exception {
-
-    OurTree classifier = new OurTree();
-
-    classifier.buildClassifier(trainingDataSet);
-
-    return classifier;
   }
 }

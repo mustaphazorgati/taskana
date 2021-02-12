@@ -1,13 +1,14 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<definitions id="definitions" name="definitions" namespace="http://camunda.org/schema/1.0/dmn" xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" id="definitions" name="definitions" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="4.6.0">
   <decision id="workbasketRouting" name="Workbasket Routing">
-    <decisionTable id="DecisionTable_1pdawfb">
-      <input id="Input_1" label="Classification name">
-        <inputExpression id="InputExpression_1" typeRef="string">
-          <text>classificationName</text>
+    <decisionTable id="workbasketRouting_decisionTable">
+      <input id="workbasketRouting_decisionTable-input_classificationName" label="Classification name">
+        <inputExpression id="workbasketRouting_decisionTable-inputExpression_classificationName" typeRef="string">
+          <text>task.classificationSummary.name</text>
         </inputExpression>
       </input>
-      <output id="Output_1" label="Workbasket Key" name="workbasketKey" typeRef="string"/>
+      <output id="workbasketRouting_decisionTable-output_workbasketKey" label="Workbasket key" name="workbasketKey" typeRef="string" />
+      <output id="workbasketRouting_decisionTable-output_domain" label="Domain" name="domain" typeRef="string" />
     </decisionTable>
   </decision>
 </definitions>

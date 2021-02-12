@@ -12,11 +12,10 @@ public class OurRule {
    * @param splitPoint at which value is the dataset split (only for numeric rules)
    * @param index index of the child. For numeric attributes:
    *     <ul>
-   *       <li>0: attrib &lt;= split</li>
-   *       <li>1: attrib &gt; split</li>
+   *       <li>0: attrib &lt;= split
+   *       <li>1: attrib &gt; split
    *     </ul>
-   *     For nominal attributes: index of the value
-   *     (Instances.attribute(attribIndex).value(index))
+   *     For nominal attributes: index of the value (Instances.attribute(attribIndex).value(index))
    */
   public OurRule(int attribIndex, double splitPoint, int index) {
     this.attribIndex = attribIndex;

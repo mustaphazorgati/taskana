@@ -24,8 +24,7 @@ public class DmnTaskRouter implements TaskRoutingProvider {
   public void initialize(TaskanaEngine taskanaEngine) {
     this.taskanaEngine = taskanaEngine;
     dmnEngine = DmnEngineConfiguration.createDefaultDmnEngineConfiguration().buildEngine();
-    try (InputStream inputStream =
-        DmnTaskRouter.class.getResourceAsStream("dmn-table.dmn")) {
+    try (InputStream inputStream = DmnTaskRouter.class.getResourceAsStream("dmn-table.dmn")) {
       // parse decision from resource input stream
       table = dmnEngine.parseDecision("workbasketRouting", inputStream);
     } catch (IOException e) {
@@ -35,8 +34,7 @@ public class DmnTaskRouter implements TaskRoutingProvider {
 
   @Override
   public String determineWorkbasketId(Task task) {
-    VariableMap variables =
-        Variables.putValue("task", task);
+    VariableMap variables = Variables.putValue("task", task);
 
     // evaluate decision
     DmnDecisionTableResult result = dmnEngine.evaluateDecisionTable(table, variables);
