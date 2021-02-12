@@ -41,11 +41,11 @@
       <version>1.7.26</version>
     </dependency>
 
-    <!-- unit testing -->
+    <!-- TODO: add this module to reactor -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <groupId>pro.taskana</groupId>
+      <artifactId>taskana-core</artifactId>
+      <version>4.4.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
@@ -56,7 +56,7 @@
         <artifactId>exec-maven-plugin</artifactId>
         <version>1.4.0</version>
         <configuration>
-          <mainClass>org.camunda.bpm.example.DishDecider</mainClass>
+          <mainClass>org.camunda.bpm.example.DMNTaskRoutingProvider</mainClass>
           <arguments>
             <argument>Winter</argument>
             <argument>4</argument>
@@ -93,7 +93,7 @@
               <addClasspath>true</addClasspath>
               <classpathPrefix>lib/</classpathPrefix>
               <useUniqueVersions>false</useUniqueVersions>
-              <mainClass>org.camunda.bpm.example.DishDecider</mainClass>
+              <mainClass>org.camunda.bpm.example.DMNTaskRoutingProvider</mainClass>
             </manifest>
           </archive>
           <finalName>DishDecider</finalName>
