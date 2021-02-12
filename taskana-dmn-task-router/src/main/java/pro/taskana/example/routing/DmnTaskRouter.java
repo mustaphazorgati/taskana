@@ -36,7 +36,7 @@ public class DmnTaskRouter implements TaskRoutingProvider {
   @Override
   public String determineWorkbasketId(Task task) {
     VariableMap variables =
-        Variables.putValue("classificationName", task.getClassificationSummary().getName());
+        Variables.putValue("task", task);
 
     // evaluate decision
     DmnDecisionTableResult result = dmnEngine.evaluateDecisionTable(table, variables);

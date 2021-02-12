@@ -4,7 +4,7 @@
     <decisionTable id="DecisionTable_1pdawfb">
       <input id="Input_1" label="Classification name" biodi:width="192">
         <inputExpression id="InputExpression_1" typeRef="string">
-          <text>classificationName</text>
+          <text>task.classificationSummary.name</text>
         </inputExpression>
       </input>
       <output id="Output_1" label="Workbasket Key" name="workbasketKey" typeRef="string" />
