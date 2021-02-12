@@ -3,13 +3,20 @@ package pro.taskana.example.decision;
 public class Rule {
     private final int attribIndex;
     private final double splitPoint;
-    private final boolean left;
+    private final int index;
 
 
-    public Rule(int attribIndex, double splitPoint, boolean left) {
+    /**
+     *
+     * @param attribIndex which attribute was used for splitting
+     * @param splitPoint at which value is the dataset split (only for numeric rules)
+     * @param index index of the child. For numeric attributes: 0 --> attrib <= split, 1 --> attrib > split.
+     *              For nominal attributes: index of the value (Instances.attribute(attribIndex).value(index))
+     */
+    public Rule(int attribIndex, double splitPoint, int index) {
         this.attribIndex = attribIndex;
         this.splitPoint = splitPoint;
-        this.left = left;
+        this.index = index;
     }
 
     public int getAttribIndex() {
@@ -20,8 +27,8 @@ public class Rule {
         return splitPoint;
     }
 
-    public boolean isLeft() {
-        return left;
+    public int getIndex() {
+        return index;
     }
 
     @Override
@@ -29,7 +36,7 @@ public class Rule {
         return "Rule{" +
                 "attribIndex=" + attribIndex +
                 ", splitPoint=" + splitPoint +
-                ", left=" + left +
+                ", index=" + index +
                 '}';
     }
 }

@@ -1,5 +1,6 @@
 package pro.taskana.example.decision;
 
+import weka.core.Attribute;
 import weka.core.Instances;
 import weka.core.converters.CSVLoader;
 import weka.filters.Filter;
@@ -7,6 +8,7 @@ import weka.filters.unsupervised.attribute.NumericToNominal;
 import weka.filters.unsupervised.attribute.RemoveByName;
 
 import java.io.IOException;
+import java.util.List;
 
 public class TrainTree {
 
@@ -46,7 +48,31 @@ public class TrainTree {
         Instances dataSet = TrainTree.getDataSet(TRAINING_DATA_SET_FILENAME);
         OurTree classifier = buildModel(dataSet);
         System.out.println(classifier);
-        classifier.linearizeTree();
+        List<Decision> decisions = classifier.linearizeTree();
+
+        for (Decision d : decisions) {
+
+            for (Rule r: d.getPath()) {
+                Attribute a = dataSet.attribute(r.getAttribIndex());
+                if (a.isNominal()) {
+                    System.out.println(a.name() + " == " + a.value(r.getIndex()));
+                } else {
+                    if (r.getIndex() == 0)
+                        System.out.println(a.name() + " <= " + r.getSplitPoint());
+                    else
+                        System.out.println(a.name() + " > " + r.getSplitPoint());
+                }
+            }
+            System.out.println("Decision: " + d.getClazz());
+            System.out.println("---------------\n");
+        }
+
+        //        DmnEngine dmnEngine =
+        //            DmnEngineConfiguration.createDefaultDmnEngineConfiguration().buildEngine();
+        //
+        //
+        //
+        //        DmnModelInstance dmnModel = Dmn.createEmptyModel();
 
     }
 

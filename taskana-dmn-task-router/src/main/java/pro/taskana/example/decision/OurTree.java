@@ -22,30 +22,24 @@ public class OurTree extends J48 {
             decisions.add(decision);
             System.out.println(String.format("I'm at an leaf: %s", decision));
         } else {
-            ArrayList<Rule> leftPath = new ArrayList<>(path);
-            leftPath.add(buildRuleFromNode(node, true));
-            visitNode(
-                    node.getSons()[0],
-                    leftPath,
-                    decisions
-                    );
-
-            ArrayList<Rule> rightPath = new ArrayList<>(path);
-            rightPath.add(buildRuleFromNode(node, false));
-            visitNode(
-                    node.getSons()[1],
-                    rightPath,
-                    decisions
-            );
+            for (int i = 0; i < node.getSons().length; i++) {
+                ArrayList<Rule> decentPath = new ArrayList<>(path);
+                decentPath.add(buildRuleFromNode(node, i));
+                visitNode(
+                        node.getSons()[i],
+                        decentPath,
+                        decisions
+                );
+            }
         }
     }
 
-    private Rule buildRuleFromNode(ClassifierTree node, boolean left) {
+    private Rule buildRuleFromNode(ClassifierTree node, int index) {
         if (node.getLocalModel() instanceof C45Split) {
             return new Rule(
                     ((C45Split) node.getLocalModel()).attIndex(),
                     ((C45Split) node.getLocalModel()).splitPoint(),
-                    left
+                    index
             );
         } else {
             System.out.println(node.getLocalModel().getClass());
