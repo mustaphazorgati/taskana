@@ -17,9 +17,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.camunda.bpm.example</groupId>
-      <artifactId>camunda-example-decision-engine-java-main</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <groupId>pro.taskana</groupId>
+      <artifactId>taskana-dmn-task-router</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
