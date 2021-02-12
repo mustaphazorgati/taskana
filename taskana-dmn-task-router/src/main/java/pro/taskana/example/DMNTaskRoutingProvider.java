@@ -1,4 +1,4 @@
-package org.camunda.bpm.example;
+package pro.taskana.example;
 
 import java.io.IOException;
 import java.io.InputStream;
