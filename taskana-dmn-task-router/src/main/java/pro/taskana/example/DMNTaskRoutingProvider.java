@@ -23,9 +23,9 @@ public class DMNTaskRoutingProvider implements TaskRoutingProvider {
   @Override
   public void initialize(TaskanaEngine taskanaEngine) {
     this.taskanaEngine = taskanaEngine;
-    dmnEngine =
-        DmnEngineConfiguration.createDefaultDmnEngineConfiguration().buildEngine();
-    try (InputStream inputStream = DMNTaskRoutingProvider.class.getResourceAsStream("dmn-table.dmn")) {
+    dmnEngine = DmnEngineConfiguration.createDefaultDmnEngineConfiguration().buildEngine();
+    try (InputStream inputStream =
+        DMNTaskRoutingProvider.class.getResourceAsStream("dmn-table.dmn")) {
       // parse decision from resource input stream
       table = dmnEngine.parseDecision("example", inputStream);
     } catch (IOException e) {
@@ -35,8 +35,8 @@ public class DMNTaskRoutingProvider implements TaskRoutingProvider {
 
   @Override
   public String determineWorkbasketId(Task task) {
-    VariableMap variables = Variables
-        .putValue("classificationName", task.getClassificationSummary().getName());
+    VariableMap variables =
+        Variables.putValue("classificationName", task.getClassificationSummary().getName());
 
     // evaluate decision
     DmnDecisionTableResult result = dmnEngine.evaluateDecisionTable(table, variables);
@@ -52,7 +52,10 @@ public class DMNTaskRoutingProvider implements TaskRoutingProvider {
     try {
       return taskanaEngine.getWorkbasketService().getWorkbasket(workbasketKey, domain).getId();
     } catch (Exception e) {
-      throw new SystemException(String.format("Unknown workbasket defined in DMN Table. key: '%s', domain: '%s'", workbasketKey, domain));
+      throw new SystemException(
+          String.format(
+              "Unknown workbasket defined in DMN Table. key: '%s', domain: '%s'",
+              workbasketKey, domain));
     }
   }
 }
