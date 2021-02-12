@@ -11,7 +11,7 @@
       <output id="OutputClause_0i75bu1" label="Domain" name="domain" typeRef="string" />
       <rule id="DecisionRule_1vj4vo7">
         <inputEntry id="UnaryTests_0csdgle">
-          <text>"Widerspruch"</text>
+          <text>"Widerruf"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_028xy2o">
           <text>"GPK_KSC"</text>
