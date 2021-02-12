@@ -14,7 +14,7 @@ import pro.taskana.common.api.exceptions.SystemException;
 import pro.taskana.spi.routing.api.TaskRoutingProvider;
 import pro.taskana.task.api.models.Task;
 
-public class DmnTaskRoutingProvider implements TaskRoutingProvider {
+public class DmnTaskRouter implements TaskRoutingProvider {
 
   private TaskanaEngine taskanaEngine;
   private DmnEngine dmnEngine;
@@ -25,7 +25,7 @@ public class DmnTaskRoutingProvider implements TaskRoutingProvider {
     this.taskanaEngine = taskanaEngine;
     dmnEngine = DmnEngineConfiguration.createDefaultDmnEngineConfiguration().buildEngine();
     try (InputStream inputStream =
-        DmnTaskRoutingProvider.class.getResourceAsStream("dmn-table.dmn")) {
+        DmnTaskRouter.class.getResourceAsStream("dmn-table.dmn")) {
       // parse decision from resource input stream
       table = dmnEngine.parseDecision("workbasketRouting", inputStream);
     } catch (IOException e) {
