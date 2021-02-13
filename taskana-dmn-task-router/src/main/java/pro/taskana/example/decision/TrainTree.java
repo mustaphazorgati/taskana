@@ -14,6 +14,8 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.NumericToNominal;
 import weka.filters.unsupervised.attribute.RemoveByName;
 
+import pro.taskana.example.decision.DmnBuilder.RuleBuilder;
+
 public class TrainTree {
 
   private static final String TRAINING_DATA_SET_FILENAME = "titanic.csv";
@@ -68,44 +70,69 @@ public class TrainTree {
     DmnBuilder builder =
         new DmnBuilder()
             .decisionTable("workbasketRouting", "Workbasket Routing")
-            .input("classificationName", "number", "task.custom1", "Classification name")
             .output("string", "workbasketKey", "Workbasket key")
             .output("string", "domain", "Domain");
-    for (OurDecision decision : decisions) {
+
+    int attributeCount = dataSet.numAttributes();
+    for (int i = 0; i < attributeCount; i++) {
+      if (i != dataSet.classIndex()) {
+        Attribute attribute = dataSet.attribute(i);
+        String typeRef = attribute.isNominal() ? "string" : "double";
+        String taskAttribute = mapToTaskAttribute(attribute);
+        builder.input(String.valueOf(i), typeRef, taskAttribute, attribute.name());
+      }
+    }
+
+    for (int i = 0; i < decisions.size(); i++) {
+      OurDecision decision = decisions.get(i);
+      System.out.println("PARSING DECISION:");
+      System.out.println(decision);
       Map<Integer, List<OurRule>> groupedRules =
           decision.getPath().stream().collect(Collectors.groupingBy(OurRule::getAttribIndex));
 
-      for (Map.Entry<Integer, List<OurRule>> entry : groupedRules.entrySet()) {}
+      RuleBuilder ruleBuilder = builder.rule(String.valueOf(i));
+      for (int j = 0; j < attributeCount; j++) {
+        if (j != dataSet.classIndex()) {
+          List<OurRule> rules = groupedRules.get(j);
+          if (rules == null) {
+            ruleBuilder.input(String.valueOf(j), "");
+          } else {
+            OurRule rule = rules.get(0);
+            String expression;
+            if (dataSet.attribute(rule.getAttribIndex()).isNominal()) {
+              expression =
+                  "\"" + dataSet.attribute(rule.getAttribIndex()).value(rule.getIndex()) + "\"";
+            } else {
+              expression = (rule.getIndex() == 0 ? "<" : ">") + " " + rule.getSplitPoint();
+            }
+            ruleBuilder.input(String.valueOf(j), expression);
+          }
+        }
+      }
+      ruleBuilder
+          .output("workbasketKey", decision.getClazz() == 0 ? "\"DIED\"" : "\"SURVIVED\"")
+          .output("domain", "\"DOMAIN_A\"").persist();
     }
-
-    builder
-        .rule("1")
-        .input("custom1", "number(input) <10")
-        .output("workbasketKey", "\"GPK_KSC\"")
-        .output("domain", "\"DOMAIN_A\"")
-        .persist();
 
     DmnModelInstance model = builder.build();
     Dmn.validateModel(model);
     return model;
   }
 
-  private static String mapToTask(Attribute desc) {
+  private static String mapToTaskAttribute(Attribute desc) {
     switch (desc.name()) {
       case "Pclass":
         return "task.custom1";
-      case "Name":
-        return "task.custom2";
       case "Sex":
-        return "task.custom3";
+        return "task.custom2";
       case "Age":
-        return "task.custom4";
+        return "task.custom3";
       case "Siblings/Spouses Aboard":
-        return "task.custom5";
+        return "task.custom4";
       case "Parents/Children Aboard":
-        return "task.custom6";
+        return "task.custom5";
       case "Fare":
-        return "task.custom7";
+        return "task.custom6";
       default:
         throw new RuntimeException(
             String.format("Can't map Attribute '%s' to Task attribute.", desc.name()));

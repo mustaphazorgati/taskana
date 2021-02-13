@@ -2,21 +2,503 @@
 <definitions xmlns:ns0="http://camunda.org/schema/1.0/dmn" id="definitions" name="definitions" namespace="http://camunda.org/schema/1.0/dmn" xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd">
   <decision id="workbasketRouting" name="Workbasket Routing">
     <decisionTable id="workbasketRouting_decisionTable">
-      <input id="workbasketRouting_decisionTable-input_classificationName" label="Classification name" ns0:inputVariable="input">
-        <inputExpression id="workbasketRouting_decisionTable-inputExpression_classificationName" typeRef="number">
+      <input id="workbasketRouting_decisionTable-input_1" label="Pclass" ns0:inputVariable="input">
+        <inputExpression id="workbasketRouting_decisionTable-inputExpression_1" typeRef="double">
           <text>task.custom1</text>
+        </inputExpression>
+      </input>
+      <input id="workbasketRouting_decisionTable-input_2" label="Sex" ns0:inputVariable="input">
+        <inputExpression id="workbasketRouting_decisionTable-inputExpression_2" typeRef="string">
+          <text>task.custom2</text>
+        </inputExpression>
+      </input>
+      <input id="workbasketRouting_decisionTable-input_3" label="Age" ns0:inputVariable="input">
+        <inputExpression id="workbasketRouting_decisionTable-inputExpression_3" typeRef="double">
+          <text>task.custom3</text>
+        </inputExpression>
+      </input>
+      <input id="workbasketRouting_decisionTable-input_4" label="Siblings/Spouses Aboard" ns0:inputVariable="input">
+        <inputExpression id="workbasketRouting_decisionTable-inputExpression_4" typeRef="double">
+          <text>task.custom4</text>
+        </inputExpression>
+      </input>
+      <input id="workbasketRouting_decisionTable-input_5" label="Parents/Children Aboard" ns0:inputVariable="input">
+        <inputExpression id="workbasketRouting_decisionTable-inputExpression_5" typeRef="double">
+          <text>task.custom5</text>
+        </inputExpression>
+      </input>
+      <input id="workbasketRouting_decisionTable-input_6" label="Fare" ns0:inputVariable="input">
+        <inputExpression id="workbasketRouting_decisionTable-inputExpression_6" typeRef="double">
+          <text>task.custom6</text>
         </inputExpression>
       </input>
       <output id="workbasketRouting_decisionTable-output_workbasketKey" label="Workbasket key" name="workbasketKey" typeRef="string"/>
       <output id="workbasketRouting_decisionTable-output_domain" label="Domain" name="domain" typeRef="string"/>
+      <rule id="workbasketRouting_decisionTable-rule_0">
+        <inputEntry id="workbasketRouting_decisionTable-rule_0-inputEntry_1">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_0-inputEntry_2">
+          <text>"male"</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_0-inputEntry_3">
+          <text>&lt; 13.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_0-inputEntry_4">
+          <text>&lt; 2.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_0-inputEntry_5">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_0-inputEntry_6">
+          <text/>
+        </inputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_0-outputEntry_workbasketKey">
+          <text>"SURVIVED"</text>
+        </outputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_0-outputEntry_domain">
+          <text>"DOMAIN_A"</text>
+        </outputEntry>
+      </rule>
       <rule id="workbasketRouting_decisionTable-rule_1">
-        <inputEntry id="workbasketRouting_decisionTable-rule_1-inputEntry_custom1">
-          <text>number(input) &lt;10</text>
+        <inputEntry id="workbasketRouting_decisionTable-rule_1-inputEntry_1">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_1-inputEntry_2">
+          <text>"male"</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_1-inputEntry_3">
+          <text>&lt; 13.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_1-inputEntry_4">
+          <text>&gt; 2.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_1-inputEntry_5">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_1-inputEntry_6">
+          <text/>
         </inputEntry>
         <outputEntry id="workbasketRouting_decisionTable-rule_1-outputEntry_workbasketKey">
-          <text>"GPK_KSC"</text>
+          <text>"DIED"</text>
         </outputEntry>
         <outputEntry id="workbasketRouting_decisionTable-rule_1-outputEntry_domain">
+          <text>"DOMAIN_A"</text>
+        </outputEntry>
+      </rule>
+      <rule id="workbasketRouting_decisionTable-rule_2">
+        <inputEntry id="workbasketRouting_decisionTable-rule_2-inputEntry_1">
+          <text>&lt; 1.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_2-inputEntry_2">
+          <text>"male"</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_2-inputEntry_3">
+          <text>&gt; 13.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_2-inputEntry_4">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_2-inputEntry_5">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_2-inputEntry_6">
+          <text/>
+        </inputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_2-outputEntry_workbasketKey">
+          <text>"DIED"</text>
+        </outputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_2-outputEntry_domain">
+          <text>"DOMAIN_A"</text>
+        </outputEntry>
+      </rule>
+      <rule id="workbasketRouting_decisionTable-rule_3">
+        <inputEntry id="workbasketRouting_decisionTable-rule_3-inputEntry_1">
+          <text>&lt; 1.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_3-inputEntry_2">
+          <text>"male"</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_3-inputEntry_3">
+          <text>&gt; 13.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_3-inputEntry_4">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_3-inputEntry_5">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_3-inputEntry_6">
+          <text/>
+        </inputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_3-outputEntry_workbasketKey">
+          <text>"SURVIVED"</text>
+        </outputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_3-outputEntry_domain">
+          <text>"DOMAIN_A"</text>
+        </outputEntry>
+      </rule>
+      <rule id="workbasketRouting_decisionTable-rule_4">
+        <inputEntry id="workbasketRouting_decisionTable-rule_4-inputEntry_1">
+          <text>&lt; 1.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_4-inputEntry_2">
+          <text>"male"</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_4-inputEntry_3">
+          <text>&gt; 13.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_4-inputEntry_4">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_4-inputEntry_5">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_4-inputEntry_6">
+          <text/>
+        </inputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_4-outputEntry_workbasketKey">
+          <text>"DIED"</text>
+        </outputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_4-outputEntry_domain">
+          <text>"DOMAIN_A"</text>
+        </outputEntry>
+      </rule>
+      <rule id="workbasketRouting_decisionTable-rule_5">
+        <inputEntry id="workbasketRouting_decisionTable-rule_5-inputEntry_1">
+          <text>&gt; 1.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_5-inputEntry_2">
+          <text>"male"</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_5-inputEntry_3">
+          <text>&gt; 13.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_5-inputEntry_4">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_5-inputEntry_5">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_5-inputEntry_6">
+          <text/>
+        </inputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_5-outputEntry_workbasketKey">
+          <text>"DIED"</text>
+        </outputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_5-outputEntry_domain">
+          <text>"DOMAIN_A"</text>
+        </outputEntry>
+      </rule>
+      <rule id="workbasketRouting_decisionTable-rule_6">
+        <inputEntry id="workbasketRouting_decisionTable-rule_6-inputEntry_1">
+          <text>&lt; 2.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_6-inputEntry_2">
+          <text>"female"</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_6-inputEntry_3">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_6-inputEntry_4">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_6-inputEntry_5">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_6-inputEntry_6">
+          <text/>
+        </inputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_6-outputEntry_workbasketKey">
+          <text>"SURVIVED"</text>
+        </outputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_6-outputEntry_domain">
+          <text>"DOMAIN_A"</text>
+        </outputEntry>
+      </rule>
+      <rule id="workbasketRouting_decisionTable-rule_7">
+        <inputEntry id="workbasketRouting_decisionTable-rule_7-inputEntry_1">
+          <text>&gt; 2.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_7-inputEntry_2">
+          <text>"female"</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_7-inputEntry_3">
+          <text>&lt; 36.5</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_7-inputEntry_4">
+          <text>&lt; 0.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_7-inputEntry_5">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_7-inputEntry_6">
+          <text>&lt; 23.25</text>
+        </inputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_7-outputEntry_workbasketKey">
+          <text>"SURVIVED"</text>
+        </outputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_7-outputEntry_domain">
+          <text>"DOMAIN_A"</text>
+        </outputEntry>
+      </rule>
+      <rule id="workbasketRouting_decisionTable-rule_8">
+        <inputEntry id="workbasketRouting_decisionTable-rule_8-inputEntry_1">
+          <text>&gt; 2.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_8-inputEntry_2">
+          <text>"female"</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_8-inputEntry_3">
+          <text>&lt; 36.5</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_8-inputEntry_4">
+          <text>&gt; 0.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_8-inputEntry_5">
+          <text>&lt; 0.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_8-inputEntry_6">
+          <text>&lt; 23.25</text>
+        </inputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_8-outputEntry_workbasketKey">
+          <text>"DIED"</text>
+        </outputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_8-outputEntry_domain">
+          <text>"DOMAIN_A"</text>
+        </outputEntry>
+      </rule>
+      <rule id="workbasketRouting_decisionTable-rule_9">
+        <inputEntry id="workbasketRouting_decisionTable-rule_9-inputEntry_1">
+          <text>&gt; 2.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_9-inputEntry_2">
+          <text>"female"</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_9-inputEntry_3">
+          <text>&lt; 36.5</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_9-inputEntry_4">
+          <text>&gt; 0.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_9-inputEntry_5">
+          <text>&lt; 0.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_9-inputEntry_6">
+          <text>&lt; 23.25</text>
+        </inputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_9-outputEntry_workbasketKey">
+          <text>"SURVIVED"</text>
+        </outputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_9-outputEntry_domain">
+          <text>"DOMAIN_A"</text>
+        </outputEntry>
+      </rule>
+      <rule id="workbasketRouting_decisionTable-rule_10">
+        <inputEntry id="workbasketRouting_decisionTable-rule_10-inputEntry_1">
+          <text>&gt; 2.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_10-inputEntry_2">
+          <text>"female"</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_10-inputEntry_3">
+          <text>&lt; 36.5</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_10-inputEntry_4">
+          <text>&gt; 0.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_10-inputEntry_5">
+          <text>&lt; 0.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_10-inputEntry_6">
+          <text>&lt; 23.25</text>
+        </inputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_10-outputEntry_workbasketKey">
+          <text>"DIED"</text>
+        </outputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_10-outputEntry_domain">
+          <text>"DOMAIN_A"</text>
+        </outputEntry>
+      </rule>
+      <rule id="workbasketRouting_decisionTable-rule_11">
+        <inputEntry id="workbasketRouting_decisionTable-rule_11-inputEntry_1">
+          <text>&gt; 2.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_11-inputEntry_2">
+          <text>"female"</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_11-inputEntry_3">
+          <text>&lt; 36.5</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_11-inputEntry_4">
+          <text>&gt; 0.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_11-inputEntry_5">
+          <text>&gt; 0.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_11-inputEntry_6">
+          <text>&lt; 23.25</text>
+        </inputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_11-outputEntry_workbasketKey">
+          <text>"SURVIVED"</text>
+        </outputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_11-outputEntry_domain">
+          <text>"DOMAIN_A"</text>
+        </outputEntry>
+      </rule>
+      <rule id="workbasketRouting_decisionTable-rule_12">
+        <inputEntry id="workbasketRouting_decisionTable-rule_12-inputEntry_1">
+          <text>&gt; 2.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_12-inputEntry_2">
+          <text>"female"</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_12-inputEntry_3">
+          <text>&lt; 36.5</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_12-inputEntry_4">
+          <text>&gt; 0.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_12-inputEntry_5">
+          <text>&gt; 0.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_12-inputEntry_6">
+          <text>&lt; 23.25</text>
+        </inputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_12-outputEntry_workbasketKey">
+          <text>"DIED"</text>
+        </outputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_12-outputEntry_domain">
+          <text>"DOMAIN_A"</text>
+        </outputEntry>
+      </rule>
+      <rule id="workbasketRouting_decisionTable-rule_13">
+        <inputEntry id="workbasketRouting_decisionTable-rule_13-inputEntry_1">
+          <text>&gt; 2.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_13-inputEntry_2">
+          <text>"female"</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_13-inputEntry_3">
+          <text>&lt; 36.5</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_13-inputEntry_4">
+          <text>&gt; 0.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_13-inputEntry_5">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_13-inputEntry_6">
+          <text>&lt; 23.25</text>
+        </inputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_13-outputEntry_workbasketKey">
+          <text>"SURVIVED"</text>
+        </outputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_13-outputEntry_domain">
+          <text>"DOMAIN_A"</text>
+        </outputEntry>
+      </rule>
+      <rule id="workbasketRouting_decisionTable-rule_14">
+        <inputEntry id="workbasketRouting_decisionTable-rule_14-inputEntry_1">
+          <text>&gt; 2.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_14-inputEntry_2">
+          <text>"female"</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_14-inputEntry_3">
+          <text>&lt; 36.5</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_14-inputEntry_4">
+          <text>&gt; 0.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_14-inputEntry_5">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_14-inputEntry_6">
+          <text>&lt; 23.25</text>
+        </inputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_14-outputEntry_workbasketKey">
+          <text>"DIED"</text>
+        </outputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_14-outputEntry_domain">
+          <text>"DOMAIN_A"</text>
+        </outputEntry>
+      </rule>
+      <rule id="workbasketRouting_decisionTable-rule_15">
+        <inputEntry id="workbasketRouting_decisionTable-rule_15-inputEntry_1">
+          <text>&gt; 2.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_15-inputEntry_2">
+          <text>"female"</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_15-inputEntry_3">
+          <text>&lt; 36.5</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_15-inputEntry_4">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_15-inputEntry_5">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_15-inputEntry_6">
+          <text>&lt; 23.25</text>
+        </inputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_15-outputEntry_workbasketKey">
+          <text>"SURVIVED"</text>
+        </outputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_15-outputEntry_domain">
+          <text>"DOMAIN_A"</text>
+        </outputEntry>
+      </rule>
+      <rule id="workbasketRouting_decisionTable-rule_16">
+        <inputEntry id="workbasketRouting_decisionTable-rule_16-inputEntry_1">
+          <text>&gt; 2.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_16-inputEntry_2">
+          <text>"female"</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_16-inputEntry_3">
+          <text>&gt; 36.5</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_16-inputEntry_4">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_16-inputEntry_5">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_16-inputEntry_6">
+          <text>&lt; 23.25</text>
+        </inputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_16-outputEntry_workbasketKey">
+          <text>"DIED"</text>
+        </outputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_16-outputEntry_domain">
+          <text>"DOMAIN_A"</text>
+        </outputEntry>
+      </rule>
+      <rule id="workbasketRouting_decisionTable-rule_17">
+        <inputEntry id="workbasketRouting_decisionTable-rule_17-inputEntry_1">
+          <text>&gt; 2.0</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_17-inputEntry_2">
+          <text>"female"</text>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_17-inputEntry_3">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_17-inputEntry_4">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_17-inputEntry_5">
+          <text/>
+        </inputEntry>
+        <inputEntry id="workbasketRouting_decisionTable-rule_17-inputEntry_6">
+          <text>&gt; 23.25</text>
+        </inputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_17-outputEntry_workbasketKey">
+          <text>"DIED"</text>
+        </outputEntry>
+        <outputEntry id="workbasketRouting_decisionTable-rule_17-outputEntry_domain">
           <text>"DOMAIN_A"</text>
         </outputEntry>
       </rule>
