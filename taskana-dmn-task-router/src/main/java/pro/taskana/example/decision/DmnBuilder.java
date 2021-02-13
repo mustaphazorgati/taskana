@@ -6,8 +6,11 @@ import org.camunda.bpm.model.dmn.instance.Decision;
 import org.camunda.bpm.model.dmn.instance.DecisionTable;
 import org.camunda.bpm.model.dmn.instance.Definitions;
 import org.camunda.bpm.model.dmn.instance.Input;
+import org.camunda.bpm.model.dmn.instance.InputEntry;
 import org.camunda.bpm.model.dmn.instance.InputExpression;
 import org.camunda.bpm.model.dmn.instance.Output;
+import org.camunda.bpm.model.dmn.instance.OutputEntry;
+import org.camunda.bpm.model.dmn.instance.Rule;
 import org.camunda.bpm.model.dmn.instance.Text;
 
 public class DmnBuilder {
@@ -76,7 +79,58 @@ public class DmnBuilder {
     return this;
   }
 
+  public DmnBuilder.RuleBuilder rule(String id) {
+    return new RuleBuilder(id);
+  }
+
   public DmnModelInstance build() {
     return modelInstance;
+  }
+
+  public class RuleBuilder {
+
+    private final Rule rule;
+
+    public RuleBuilder(String id) {
+      if (currentDecisionTable == null) {
+        throw new IllegalStateException("Can't create a rule if no decision table was created!");
+      }
+      rule = modelInstance.newInstance(Rule.class);
+      rule.setId(currentDecisionTable.getId() + "-rule_" + id);
+    }
+
+    public RuleBuilder input(String id, String expression) {
+      Text inputExpression = modelInstance.newInstance(Text.class);
+      inputExpression.setTextContent(expression);
+
+      InputEntry inputEntry = modelInstance.newInstance(InputEntry.class);
+      inputEntry.setId(rule.getId() + "-inputEntry_" + id);
+      inputEntry.setText(inputExpression);
+
+      rule.addChildElement(inputEntry);
+
+      return this;
+    }
+
+    public RuleBuilder output(String id, String expression) {
+      Text outputExpression = modelInstance.newInstance(Text.class);
+      outputExpression.setTextContent(expression);
+
+      OutputEntry outputEntry = modelInstance.newInstance(OutputEntry.class);
+      outputEntry.setId(rule.getId() + "-outputEntry_" + id);
+      outputEntry.setText(outputExpression);
+
+      rule.addChildElement(outputEntry);
+
+      return this;
+    }
+
+    public void persist() {
+      if (currentDecisionTable == null) {
+        throw new IllegalStateException("Can't persist a rule if no decision table was created!");
+      }
+
+      currentDecisionTable.addChildElement(rule);
+    }
   }
 }

@@ -1,7 +1,10 @@
 package pro.taskana.example.decision;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.camunda.bpm.model.dmn.Dmn;
 import org.camunda.bpm.model.dmn.DmnModelInstance;
 import weka.core.Attribute;
@@ -13,7 +16,8 @@ import weka.filters.unsupervised.attribute.RemoveByName;
 
 public class TrainTree {
 
-  public static final String TRAINING_DATA_SET_FILENAME = "titanic.csv";
+  private static final String TRAINING_DATA_SET_FILENAME = "titanic.csv";
+  private static final String OUTPUT_FILE_NAME = "dmn-table.dmn";
 
   public static Instances getDataSet(String fileName) throws Exception {
     int classIdx = 0;
@@ -43,23 +47,11 @@ public class TrainTree {
 
     printDecisions(dataSet, decisions);
 
-    DmnModelInstance model =
-        new DmnBuilder()
-            .decisionTable("workbasketRouting", "Workbasket Routing")
-            .input(
-                "classificationName",
-                "string",
-                "task.classificationSummary.name",
-                "Classification name")
-            .output("string", "workbasketKey", "Workbasket key")
-            .output("string", "domain", "Domain")
-            .build();
-
-    Dmn.validateModel(model);
-
-    File file = new File("src/main/resources/pro/taskana/example/routing/test.dmn");
-    file.createNewFile();
-    Dmn.writeModelToFile(file, model);
+    DmnModelInstance model = convertToDmnModel(dataSet, decisions);
+    File file = new File("src/main/resources/pro/taskana/example/routing/" + OUTPUT_FILE_NAME);
+    try (FileOutputStream outputStream = new FileOutputStream(file)) {
+      Dmn.writeModelToStream(outputStream, model);
+    }
   }
 
   public static OurTree buildModel(Instances trainingDataSet) throws Exception {
@@ -69,6 +61,37 @@ public class TrainTree {
     classifier.buildClassifier(trainingDataSet);
 
     return classifier;
+  }
+
+  private static DmnModelInstance convertToDmnModel(
+      Instances dataSet, List<OurDecision> decisions) {
+    DmnBuilder builder =
+        new DmnBuilder()
+            .decisionTable("workbasketRouting", "Workbasket Routing")
+            .input(
+                "classificationName",
+                "string",
+                "task.classificationSummary.name",
+                "Classification name")
+            .output("string", "workbasketKey", "Workbasket key")
+            .output("string", "domain", "Domain");
+    for (OurDecision decision : decisions) {
+      Map<Integer, List<OurRule>> groupedRules =
+          decision.getPath().stream().collect(Collectors.groupingBy(OurRule::getAttribIndex));
+
+      for (Map.Entry<Integer, List<OurRule>> entry : groupedRules.entrySet()) {}
+    }
+
+    builder
+        .rule("1")
+        .input("classificationName", "\"Widerruf\"")
+        .output("workbasketKey", "\"GPK_KSC\"")
+        .output("domain", "\"DOMAIN_A\"")
+        .persist();
+
+    DmnModelInstance model = builder.build();
+    Dmn.validateModel(model);
+    return model;
   }
 
   private static void printDecisions(Instances dataSet, List<OurDecision> decisions) {

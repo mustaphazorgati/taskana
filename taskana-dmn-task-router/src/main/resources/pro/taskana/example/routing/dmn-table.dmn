@@ -1,32 +1,25 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/2.0" id="Definitions_0065qj7" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="4.6.0">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<definitions id="definitions" name="definitions" namespace="http://camunda.org/schema/1.0/dmn" xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd">
   <decision id="workbasketRouting" name="Workbasket Routing">
-    <decisionTable id="DecisionTable_1pdawfb">
-      <input id="Input_1" label="Classification name" biodi:width="192">
-        <inputExpression id="InputExpression_1" typeRef="string">
+    <decisionTable id="workbasketRouting_decisionTable">
+      <input id="workbasketRouting_decisionTable-input_classificationName" label="Classification name">
+        <inputExpression id="workbasketRouting_decisionTable-inputExpression_classificationName" typeRef="string">
           <text>task.classificationSummary.name</text>
         </inputExpression>
       </input>
-      <output id="Output_1" label="Workbasket Key" name="workbasketKey" typeRef="string" />
-      <output id="OutputClause_0i75bu1" label="Domain" name="domain" typeRef="string" />
-      <rule id="DecisionRule_1vj4vo7">
-        <inputEntry id="UnaryTests_0csdgle">
+      <output id="workbasketRouting_decisionTable-output_workbasketKey" label="Workbasket key" name="workbasketKey" typeRef="string"/>
+      <output id="workbasketRouting_decisionTable-output_domain" label="Domain" name="domain" typeRef="string"/>
+      <rule id="workbasketRouting_decisionTable-rule_1">
+        <inputEntry id="workbasketRouting_decisionTable-rule_1-inputEntry_classificationName">
           <text>"Widerruf"</text>
         </inputEntry>
-        <outputEntry id="LiteralExpression_028xy2o">
+        <outputEntry id="workbasketRouting_decisionTable-rule_1-outputEntry_workbasketKey">
           <text>"GPK_KSC"</text>
         </outputEntry>
-        <outputEntry id="LiteralExpression_0pkl2zl">
+        <outputEntry id="workbasketRouting_decisionTable-rule_1-outputEntry_domain">
           <text>"DOMAIN_A"</text>
         </outputEntry>
       </rule>
     </decisionTable>
   </decision>
-  <dmndi:DMNDI>
-    <dmndi:DMNDiagram>
-      <dmndi:DMNShape dmnElementRef="example">
-        <dc:Bounds height="80" width="180" x="160" y="100" />
-      </dmndi:DMNShape>
-    </dmndi:DMNDiagram>
-  </dmndi:DMNDI>
 </definitions>
