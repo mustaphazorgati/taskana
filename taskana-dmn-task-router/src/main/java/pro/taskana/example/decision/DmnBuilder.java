@@ -58,6 +58,7 @@ public class DmnBuilder {
     input.setId(currentDecisionTable.getId() + "-input_" + id);
     input.setLabel(label);
     input.addChildElement(inputExpression);
+    input.setCamundaInputVariable("input");
 
     currentDecisionTable.addChildElement(input);
 

@@ -68,11 +68,7 @@ public class TrainTree {
     DmnBuilder builder =
         new DmnBuilder()
             .decisionTable("workbasketRouting", "Workbasket Routing")
-            .input(
-                "classificationName",
-                "string",
-                "task.classificationSummary.name",
-                "Classification name")
+            .input("classificationName", "number", "task.custom1", "Classification name")
             .output("string", "workbasketKey", "Workbasket key")
             .output("string", "domain", "Domain");
     for (OurDecision decision : decisions) {
@@ -84,7 +80,7 @@ public class TrainTree {
 
     builder
         .rule("1")
-        .input("classificationName", "\"Widerruf\"")
+        .input("custom1", "number(input) <10")
         .output("workbasketKey", "\"GPK_KSC\"")
         .output("domain", "\"DOMAIN_A\"")
         .persist();
@@ -92,6 +88,28 @@ public class TrainTree {
     DmnModelInstance model = builder.build();
     Dmn.validateModel(model);
     return model;
+  }
+
+  private static String mapToTask(Attribute desc) {
+    switch (desc.name()) {
+      case "Pclass":
+        return "task.custom1";
+      case "Name":
+        return "task.custom2";
+      case "Sex":
+        return "task.custom3";
+      case "Age":
+        return "task.custom4";
+      case "Siblings/Spouses Aboard":
+        return "task.custom5";
+      case "Parents/Children Aboard":
+        return "task.custom6";
+      case "Fare":
+        return "task.custom7";
+      default:
+        throw new RuntimeException(
+            String.format("Can't map Attribute '%s' to Task attribute.", desc.name()));
+    }
   }
 
   private static void printDecisions(Instances dataSet, List<OurDecision> decisions) {

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<definitions id="definitions" name="definitions" namespace="http://camunda.org/schema/1.0/dmn" xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd">
+<definitions xmlns:ns0="http://camunda.org/schema/1.0/dmn" id="definitions" name="definitions" namespace="http://camunda.org/schema/1.0/dmn" xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd">
   <decision id="workbasketRouting" name="Workbasket Routing">
     <decisionTable id="workbasketRouting_decisionTable">
-      <input id="workbasketRouting_decisionTable-input_classificationName" label="Classification name">
-        <inputExpression id="workbasketRouting_decisionTable-inputExpression_classificationName" typeRef="string">
-          <text>task.classificationSummary.name</text>
+      <input id="workbasketRouting_decisionTable-input_classificationName" label="Classification name" ns0:inputVariable="input">
+        <inputExpression id="workbasketRouting_decisionTable-inputExpression_classificationName" typeRef="number">
+          <text>task.custom1</text>
         </inputExpression>
       </input>
       <output id="workbasketRouting_decisionTable-output_workbasketKey" label="Workbasket key" name="workbasketKey" typeRef="string"/>
       <output id="workbasketRouting_decisionTable-output_domain" label="Domain" name="domain" typeRef="string"/>
       <rule id="workbasketRouting_decisionTable-rule_1">
-        <inputEntry id="workbasketRouting_decisionTable-rule_1-inputEntry_classificationName">
-          <text>"Widerruf"</text>
+        <inputEntry id="workbasketRouting_decisionTable-rule_1-inputEntry_custom1">
+          <text>number(input) &lt;10</text>
         </inputEntry>
         <outputEntry id="workbasketRouting_decisionTable-rule_1-outputEntry_workbasketKey">
           <text>"GPK_KSC"</text>
