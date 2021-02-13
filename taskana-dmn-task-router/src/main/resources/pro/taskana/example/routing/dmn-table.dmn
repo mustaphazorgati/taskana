@@ -42,10 +42,10 @@
           <text>"male"</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_0-inputEntry_3">
-          <text>&lt; 13.0</text>
+          <text>&lt;= 13.0</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_0-inputEntry_4">
-          <text>&lt; 2.0</text>
+          <text>&lt;= 2.0</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_0-inputEntry_5">
           <text/>
@@ -68,7 +68,7 @@
           <text>"male"</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_1-inputEntry_3">
-          <text>&lt; 13.0</text>
+          <text>&lt;= 13.0</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_1-inputEntry_4">
           <text>&gt; 2.0</text>
@@ -88,13 +88,13 @@
       </rule>
       <rule id="workbasketRouting_decisionTable-rule_2">
         <inputEntry id="workbasketRouting_decisionTable-rule_2-inputEntry_1">
-          <text>&lt; 1.0</text>
+          <text>&lt;= 1.0</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_2-inputEntry_2">
           <text>"male"</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_2-inputEntry_3">
-          <text>&gt; 13.0</text>
+          <text>]13.00..33.00]</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_2-inputEntry_4">
           <text/>
@@ -114,13 +114,13 @@
       </rule>
       <rule id="workbasketRouting_decisionTable-rule_3">
         <inputEntry id="workbasketRouting_decisionTable-rule_3-inputEntry_1">
-          <text>&lt; 1.0</text>
+          <text>&lt;= 1.0</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_3-inputEntry_2">
           <text>"male"</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_3-inputEntry_3">
-          <text>&gt; 13.0</text>
+          <text>]33.00..36.50]</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_3-inputEntry_4">
           <text/>
@@ -140,13 +140,13 @@
       </rule>
       <rule id="workbasketRouting_decisionTable-rule_4">
         <inputEntry id="workbasketRouting_decisionTable-rule_4-inputEntry_1">
-          <text>&lt; 1.0</text>
+          <text>&lt;= 1.0</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_4-inputEntry_2">
           <text>"male"</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_4-inputEntry_3">
-          <text>&gt; 13.0</text>
+          <text>&gt; 36.5</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_4-inputEntry_4">
           <text/>
@@ -192,7 +192,7 @@
       </rule>
       <rule id="workbasketRouting_decisionTable-rule_6">
         <inputEntry id="workbasketRouting_decisionTable-rule_6-inputEntry_1">
-          <text>&lt; 2.0</text>
+          <text>&lt;= 2.0</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_6-inputEntry_2">
           <text>"female"</text>
@@ -224,16 +224,16 @@
           <text>"female"</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_7-inputEntry_3">
-          <text>&lt; 36.5</text>
+          <text>&lt;= 32.5</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_7-inputEntry_4">
-          <text>&lt; 0.0</text>
+          <text>&lt;= 0.0</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_7-inputEntry_5">
           <text/>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_7-inputEntry_6">
-          <text>&lt; 23.25</text>
+          <text>&lt;= 23.25</text>
         </inputEntry>
         <outputEntry id="workbasketRouting_decisionTable-rule_7-outputEntry_workbasketKey">
           <text>"SURVIVED"</text>
@@ -250,16 +250,16 @@
           <text>"female"</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_8-inputEntry_3">
-          <text>&lt; 36.5</text>
+          <text>&lt;= 32.5</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_8-inputEntry_4">
-          <text>&gt; 0.0</text>
+          <text>]0.00..2.00]</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_8-inputEntry_5">
-          <text>&lt; 0.0</text>
+          <text>&lt;= 0.0</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_8-inputEntry_6">
-          <text>&lt; 23.25</text>
+          <text>&lt;= 14.5</text>
         </inputEntry>
         <outputEntry id="workbasketRouting_decisionTable-rule_8-outputEntry_workbasketKey">
           <text>"DIED"</text>
@@ -276,16 +276,16 @@
           <text>"female"</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_9-inputEntry_3">
-          <text>&lt; 36.5</text>
+          <text>&lt;= 32.5</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_9-inputEntry_4">
-          <text>&gt; 0.0</text>
+          <text>]0.00..2.00]</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_9-inputEntry_5">
-          <text>&lt; 0.0</text>
+          <text>&lt;= 0.0</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_9-inputEntry_6">
-          <text>&lt; 23.25</text>
+          <text>]14.50..15.90]</text>
         </inputEntry>
         <outputEntry id="workbasketRouting_decisionTable-rule_9-outputEntry_workbasketKey">
           <text>"SURVIVED"</text>
@@ -302,16 +302,16 @@
           <text>"female"</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_10-inputEntry_3">
-          <text>&lt; 36.5</text>
+          <text>&lt;= 32.5</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_10-inputEntry_4">
-          <text>&gt; 0.0</text>
+          <text>]0.00..2.00]</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_10-inputEntry_5">
-          <text>&lt; 0.0</text>
+          <text>&lt;= 0.0</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_10-inputEntry_6">
-          <text>&lt; 23.25</text>
+          <text>]15.90..18.00]</text>
         </inputEntry>
         <outputEntry id="workbasketRouting_decisionTable-rule_10-outputEntry_workbasketKey">
           <text>"DIED"</text>
@@ -328,16 +328,16 @@
           <text>"female"</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_11-inputEntry_3">
-          <text>&lt; 36.5</text>
+          <text>&lt;= 6.0</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_11-inputEntry_4">
-          <text>&gt; 0.0</text>
+          <text>]0.00..2.00]</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_11-inputEntry_5">
           <text>&gt; 0.0</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_11-inputEntry_6">
-          <text>&lt; 23.25</text>
+          <text>&lt;= 18.0</text>
         </inputEntry>
         <outputEntry id="workbasketRouting_decisionTable-rule_11-outputEntry_workbasketKey">
           <text>"SURVIVED"</text>
@@ -354,16 +354,16 @@
           <text>"female"</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_12-inputEntry_3">
-          <text>&lt; 36.5</text>
+          <text>]6.00..32.50]</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_12-inputEntry_4">
-          <text>&gt; 0.0</text>
+          <text>]0.00..2.00]</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_12-inputEntry_5">
           <text>&gt; 0.0</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_12-inputEntry_6">
-          <text>&lt; 23.25</text>
+          <text>&lt;= 18.0</text>
         </inputEntry>
         <outputEntry id="workbasketRouting_decisionTable-rule_12-outputEntry_workbasketKey">
           <text>"DIED"</text>
@@ -380,16 +380,16 @@
           <text>"female"</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_13-inputEntry_3">
-          <text>&lt; 36.5</text>
+          <text>&lt;= 32.5</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_13-inputEntry_4">
-          <text>&gt; 0.0</text>
+          <text>]0.00..2.00]</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_13-inputEntry_5">
           <text/>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_13-inputEntry_6">
-          <text>&lt; 23.25</text>
+          <text>]18.00..23.25]</text>
         </inputEntry>
         <outputEntry id="workbasketRouting_decisionTable-rule_13-outputEntry_workbasketKey">
           <text>"SURVIVED"</text>
@@ -406,16 +406,16 @@
           <text>"female"</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_14-inputEntry_3">
-          <text>&lt; 36.5</text>
+          <text>&lt;= 32.5</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_14-inputEntry_4">
-          <text>&gt; 0.0</text>
+          <text>&gt; 2.0</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_14-inputEntry_5">
           <text/>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_14-inputEntry_6">
-          <text>&lt; 23.25</text>
+          <text>&lt;= 23.25</text>
         </inputEntry>
         <outputEntry id="workbasketRouting_decisionTable-rule_14-outputEntry_workbasketKey">
           <text>"DIED"</text>
@@ -432,7 +432,7 @@
           <text>"female"</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_15-inputEntry_3">
-          <text>&lt; 36.5</text>
+          <text>]32.50..36.50]</text>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_15-inputEntry_4">
           <text/>
@@ -441,7 +441,7 @@
           <text/>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_15-inputEntry_6">
-          <text>&lt; 23.25</text>
+          <text>&lt;= 23.25</text>
         </inputEntry>
         <outputEntry id="workbasketRouting_decisionTable-rule_15-outputEntry_workbasketKey">
           <text>"SURVIVED"</text>
@@ -467,7 +467,7 @@
           <text/>
         </inputEntry>
         <inputEntry id="workbasketRouting_decisionTable-rule_16-inputEntry_6">
-          <text>&lt; 23.25</text>
+          <text>&lt;= 23.25</text>
         </inputEntry>
         <outputEntry id="workbasketRouting_decisionTable-rule_16-outputEntry_workbasketKey">
           <text>"DIED"</text>

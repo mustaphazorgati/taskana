@@ -19,7 +19,6 @@ public class OurTree extends J48 {
     if (node.isLeaf()) {
       OurDecision decision = new OurDecision(path, node.getLocalModel().distribution().maxClass());
       decisions.add(decision);
-      System.out.printf("I'm at an leaf: %s%n", decision);
     } else {
       for (int i = 0; i < node.getSons().length; i++) {
         ArrayList<OurRule> decentPath = new ArrayList<>(path);

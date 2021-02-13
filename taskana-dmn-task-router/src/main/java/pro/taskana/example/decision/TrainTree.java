@@ -2,8 +2,10 @@ package pro.taskana.example.decision;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.camunda.bpm.model.dmn.Dmn;
 import org.camunda.bpm.model.dmn.DmnModelInstance;
@@ -42,26 +44,25 @@ public class TrainTree {
   }
 
   public static void main(String[] args) throws Exception {
-    Instances dataSet = TrainTree.getDataSet(TRAINING_DATA_SET_FILENAME);
+    System.out.println("Collecting dataset...");
+    Instances dataSet = getDataSet(TRAINING_DATA_SET_FILENAME);
+    System.out.println("Training Decision Tee...");
     OurTree classifier = buildModel(dataSet);
     System.out.println(classifier);
+    System.out.println("Converting Tree to DMN Model...");
     List<OurDecision> decisions = classifier.linearizeTree();
-
-    printDecisions(dataSet, decisions);
-
     DmnModelInstance model = convertToDmnModel(dataSet, decisions);
     File file = new File("src/main/resources/pro/taskana/example/routing/" + OUTPUT_FILE_NAME);
+    System.out.println("writing DMN Model to file: " + file.getAbsolutePath());
     try (FileOutputStream outputStream = new FileOutputStream(file)) {
       Dmn.writeModelToStream(outputStream, model);
     }
+    System.out.println("DONE! HAPPY ROUTING!");
   }
 
   public static OurTree buildModel(Instances trainingDataSet) throws Exception {
-
     OurTree classifier = new OurTree();
-
     classifier.buildClassifier(trainingDataSet);
-
     return classifier;
   }
 
@@ -85,8 +86,6 @@ public class TrainTree {
 
     for (int i = 0; i < decisions.size(); i++) {
       OurDecision decision = decisions.get(i);
-      System.out.println("PARSING DECISION:");
-      System.out.println(decision);
       Map<Integer, List<OurRule>> groupedRules =
           decision.getPath().stream().collect(Collectors.groupingBy(OurRule::getAttribIndex));
 
@@ -97,13 +96,45 @@ public class TrainTree {
           if (rules == null) {
             ruleBuilder.input(String.valueOf(j), "");
           } else {
-            OurRule rule = rules.get(0);
             String expression;
-            if (dataSet.attribute(rule.getAttribIndex()).isNominal()) {
+            if (dataSet.attribute(j).isNominal()) {
               expression =
-                  "\"" + dataSet.attribute(rule.getAttribIndex()).value(rule.getIndex()) + "\"";
+                  rules.stream()
+                      .map(rule -> dataSet.attribute(rule.getAttribIndex()).value(rule.getIndex()))
+                      .map(expr -> "\"" + expr + "\"")
+                      .collect(Collectors.joining(", "));
             } else {
-              expression = (rule.getIndex() == 0 ? "<" : ">") + " " + rule.getSplitPoint();
+              if (rules.size() == 1) {
+                // TODO: filter out >0 and <= 0 ?
+                OurRule rule = rules.get(0);
+                expression = (rule.getIndex() == 0 ? "<=" : ">") + " " + rule.getSplitPoint();
+              } else {
+                Optional<OurRule> lowestUpperBound =
+                    rules.stream()
+                        .filter(rule -> rule.getIndex() == 0)
+                        // TODO: filter out <= 0?
+                        // .filter(rule -> rule.getSplitPoint() != 0)
+                        .min(Comparator.comparing(OurRule::getSplitPoint));
+                Optional<OurRule> highestLowerBound =
+                    rules.stream()
+                        .filter(rule -> rule.getIndex() == 1)
+                        // TODO: filter out > 0?
+                        // .filter(rule -> rule.getSplitPoint() != 0)
+                        .max(Comparator.comparing(OurRule::getSplitPoint));
+                if (lowestUpperBound.isPresent() && highestLowerBound.isPresent()) {
+                  expression =
+                      String.format(
+                          "]%.2f..%.2f]",
+                          highestLowerBound.get().getSplitPoint(),
+                          lowestUpperBound.get().getSplitPoint());
+                } else if (lowestUpperBound.isPresent()) {
+                  expression = "<= " + lowestUpperBound.get().getSplitPoint();
+                } else if (highestLowerBound.isPresent()) {
+                  expression = "> " + highestLowerBound.get().getSplitPoint();
+                } else {
+                  expression = "";
+                }
+              }
             }
             ruleBuilder.input(String.valueOf(j), expression);
           }
@@ -111,7 +142,8 @@ public class TrainTree {
       }
       ruleBuilder
           .output("workbasketKey", decision.getClazz() == 0 ? "\"DIED\"" : "\"SURVIVED\"")
-          .output("domain", "\"DOMAIN_A\"").persist();
+          .output("domain", "\"DOMAIN_A\"")
+          .persist();
     }
 
     DmnModelInstance model = builder.build();
