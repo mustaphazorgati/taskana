@@ -3,6 +3,7 @@ context('TASKANA Classifications', () => {
 
   it('should be possible to edit the Service Level of a classification', () => {
     cy.visit(Cypress.env('appUrl') + Cypress.env('adminUrl') + '/classifications');
+    cy.wait(Cypress.env('pageReload'));
     cy.contains(Cypress.env('testValueClassificationSelectionName')).click();
 
     const editedValue = 'P99D';
@@ -18,6 +19,7 @@ context('TASKANA Classifications', () => {
 
   it('should be able to visit Classifications and filter by manual', () => {
     cy.visit(Cypress.env('appUrl') + Cypress.env('adminUrl') + '/classifications');
+    cy.wait(Cypress.env('pageReload'));
  
     cy.get('button[mattooltip="Filter Category"]').click()
     .then(() => {
@@ -29,6 +31,7 @@ context('TASKANA Classifications', () => {
 
   it('should be possible to edit the Name of a classification', () => {
     cy.visit(Cypress.env('appUrl') + Cypress.env('adminUrl') + '/classifications');
+    cy.wait(Cypress.env('pageReload'));
     cy.contains(Cypress.env('testValueClassificationSelectionName')).click();
 
     const editedValue = 'CY-TEST';
@@ -44,6 +47,7 @@ context('TASKANA Classifications', () => {
 
   it('should be possible to edit the Category of a classification', () => {
     cy.visit(Cypress.env('appUrl') + Cypress.env('adminUrl') + '/classifications');
+    cy.wait(Cypress.env('pageReload'));
     cy.contains(Cypress.env('testValueClassificationSelectionName')).click();
 
     cy.get('ng-form').find('mat-form-field').find('mat-select[role="listbox"]').click();
@@ -69,6 +73,7 @@ context('TASKANA Classifications', () => {
   
   it('should be possible to edit the Description of a classification', () => {
     cy.visit(Cypress.env('appUrl') + Cypress.env('adminUrl') + '/classifications');
+    cy.wait(Cypress.env('pageReload'));
     cy.contains(Cypress.env('testValueClassificationSelectionName')).click();
 
     const editedValue = 'CY-TEST-DESC';
@@ -84,6 +89,7 @@ context('TASKANA Classifications', () => {
 
   it('should be possible to edit classification custom 1 to 8', () => {
     cy.visit(Cypress.env('appUrl') + Cypress.env('adminUrl') + '/classifications');
+    cy.wait(Cypress.env('pageReload'));
     cy.contains(Cypress.env('testValueClassificationSelectionName')).click();
 
     cy.wrap([1, 2, 3, 4, 5, 6, 7]).each((index) => {
@@ -103,6 +109,7 @@ context('TASKANA Classifications', () => {
 
   it('should be possible to edit the application entry point', () => {
     cy.visit(Cypress.env('appUrl') + Cypress.env('adminUrl') + '/classifications');
+    cy.wait(Cypress.env('pageReload'));
     cy.contains(Cypress.env('testValueClassificationSelectionName')).click();
 
     cy.get('#classification-application-entry-point').clear().type(Cypress.env('testValueClassifications'));

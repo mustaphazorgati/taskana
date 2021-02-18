@@ -42,6 +42,7 @@ Cypress.Commands.add('saveWorkbaskets', () => {
 
 Cypress.Commands.add('visitTestWorkbasket', () => {
   cy.visit(Cypress.env('appUrl') + Cypress.env('adminUrl') + '/workbaskets');
+  cy.wait(Cypress.env('pageReload'));
   cy.contains(Cypress.env('testValueWorkbasketSelectionName')).click();
   cy.visitWorkbasketsInformationPage();
 });
@@ -56,15 +57,13 @@ Cypress.Commands.add('loginAs', (username) => {
       cy.log('Local development - No need for testing login functionality');
   } else {
       cy.visit(Cypress.env('baseUrl') + '/login');
+      cy.wait(Cypress.env('pageReload'));
 
       cy.get('#username').type('admin').should('have.value', 'admin');
-    
-      cy.get('#password').type('admin').should('have.value', 'admin');
-    
+      cy.get('#password').type('admin').should('have.value', 'admin');  
       cy.get('#login-submit').click();
     
-      cy.reload();
-      cy.wait(Cypress.env('pageReload'));
+      cy.reloadPageWithWait();
     
       cy.location().should((location) => {
         expect(location.href).to.eq(Cypress.env('baseUrl') + '/#/taskana/workplace/tasks');
