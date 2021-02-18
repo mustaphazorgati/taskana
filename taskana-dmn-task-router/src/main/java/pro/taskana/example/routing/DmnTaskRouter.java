@@ -10,9 +10,11 @@ import org.camunda.bpm.engine.variable.VariableMap;
 import org.camunda.bpm.engine.variable.Variables;
 
 import pro.taskana.common.api.TaskanaEngine;
+import pro.taskana.common.api.exceptions.NotAuthorizedException;
 import pro.taskana.common.api.exceptions.SystemException;
 import pro.taskana.spi.routing.api.TaskRoutingProvider;
 import pro.taskana.task.api.models.Task;
+import pro.taskana.workbasket.api.exceptions.WorkbasketNotFoundException;
 
 public class DmnTaskRouter implements TaskRoutingProvider {
 
@@ -49,10 +51,16 @@ public class DmnTaskRouter implements TaskRoutingProvider {
 
     try {
       return taskanaEngine.getWorkbasketService().getWorkbasket(workbasketKey, domain).getId();
-    } catch (Exception e) {
+    } catch (WorkbasketNotFoundException e) {
       throw new SystemException(
           String.format(
               "Unknown workbasket defined in DMN Table. key: '%s', domain: '%s'",
+              workbasketKey, domain));
+    } catch (NotAuthorizedException e) {
+      throw new SystemException(
+          String.format(
+              "The current user is not authorized to create a task in the routed workbasket. "
+                  + "key: '%s', domain: '%s'",
               workbasketKey, domain));
     }
   }
