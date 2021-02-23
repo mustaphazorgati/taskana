@@ -7,7 +7,7 @@ context('TASKANA Workbaskets', () => {
   });
 
 
-  it('should be able to filter workbaskets by bame', () => {
+  it('should be able to filter workbaskets by name', () => {
     cy.visit(Cypress.env('appUrl') + Cypress.env('adminUrl') + '/workbaskets');
     cy.verifyPageLoad('/workbaskets');
 
