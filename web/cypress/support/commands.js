@@ -22,7 +22,7 @@ Cypress.Commands.add('visitTestWorkbasket', () => {
   cy.visit(Cypress.env('appUrl') + Cypress.env('adminUrl') + '/workbaskets');
   cy.verifyPageLoad('/workbaskets');
 
-  cy.get('mat-selection-list').contains(Cypress.env('testValueWorkbasketSelectionName')).click();
+  cy.get('mat-selection-list').contains(Cypress.env('testValueWorkbasketSelectionName')).should('exist').click();
   cy.visitWorkbasketsInformationPage();
 });
 
@@ -30,7 +30,7 @@ Cypress.Commands.add('visitTestClassification', () => {
   cy.visit(Cypress.env('appUrl') + Cypress.env('adminUrl') + '/classifications');
   cy.verifyPageLoad('/classifications');
 
-  cy.get('taskana-administration-tree').contains(Cypress.env('testValueClassificationSelectionName')).click();
+  cy.get('taskana-administration-tree').contains(Cypress.env('testValueClassificationSelectionName')).should('exist').click();
 });
 
 Cypress.Commands.add('loginAs', (username) => {
