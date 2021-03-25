@@ -10,6 +10,9 @@ import javax.sql.DataSource;
 import org.apache.ibatis.datasource.pooled.PooledDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.JdbcDatabaseContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 /** Integration Test for TaskanaEngineConfiguration. */
 public final class TaskanaEngineTestConfiguration {
@@ -21,14 +24,32 @@ public final class TaskanaEngineTestConfiguration {
   private static String schemaName = null;
 
   static {
-    String userHomeDirectroy = System.getProperty("user.home");
-    String propertiesFileName = userHomeDirectroy + "/taskanaUnitTest.properties";
-    File f = new File(propertiesFileName);
-    if (f.exists() && !f.isDirectory()) {
-      DATA_SOURCE = createDataSourceFromProperties(propertiesFileName);
-    } else {
-      DATA_SOURCE = createDefaultDataSource();
-    }
+    // TODO: select container depending on System properties
+
+    JdbcDatabaseContainer<?> container;
+    // TODO: set locale changes? - why do we need them?
+      container = new PostgreSQLContainer<>(DockerImageName.parse("postgres:10"));
+//    container =
+//        new Db2Container(
+//                DockerImageName.parse("taskana/db2:11.1").asCompatibleSubstituteFor("ibmcom/db2"))
+//            .withCommand("-d")
+//            .waitingFor(
+//                new LogMessageWaitStrategy()
+//                    .withRegEx(".*DB2START processing was successful.*")
+//                    .withStartupTimeout(Duration.of(1, ChronoUnit.MINUTES)))
+//            .withUsername("db2inst1")
+//            .withPassword("db2inst1-pwd")
+//            .withDatabaseName("TSKDB");
+    container.start();
+    DATA_SOURCE = createDataSource(container);
+    //    String userHomeDirectory = System.getProperty("user.home");
+    //    String propertiesFileName = userHomeDirectory + "/taskanaUnitTest.properties";
+    //    File f = new File(propertiesFileName);
+    //    if (f.exists() && !f.isDirectory()) {
+    //      DATA_SOURCE = createDataSourceFromProperties(propertiesFileName);
+    //    } else {
+    //      DATA_SOURCE = createDefaultDataSource();
+    //    }
   }
 
   private TaskanaEngineTestConfiguration() {}
@@ -66,7 +87,7 @@ public final class TaskanaEngineTestConfiguration {
       if (f.exists() && !f.isDirectory()) {
         schemaName = getSchemaNameFromPropertiesObject(propertiesFileName);
       } else {
-        schemaName = "TASKANA";
+        schemaName = "taskana";
       }
     }
     return schemaName;
@@ -161,6 +182,29 @@ public final class TaskanaEngineTestConfiguration {
     return schemaName;
   }
 
+  private static DataSource createDataSource(JdbcDatabaseContainer<?> container) {
+    String jdbcDriver = container.getDriverClassName();
+    String jdbcUrl = container.getJdbcUrl();
+    String dbUserName = container.getUsername();
+    String dbPassword = container.getPassword();
+    PooledDataSource ds =
+        new PooledDataSource(
+            Thread.currentThread().getContextClassLoader(),
+            jdbcDriver,
+            jdbcUrl,
+            dbUserName,
+            dbPassword);
+    ds.setPoolTimeToWait(POOL_TIME_TO_WAIT);
+    ds.forceCloseAll(); // otherwise the MyBatis pool is not initialized correctly
+    // TODO: fix this :)
+    //    if(container.getDatabaseName().equals("postgres")) {
+    //      schemaName = "taskana";
+    //    } else {
+    //      schemaName = "TASKANA";
+    //    }
+    return ds;
+  }
+
   /**
    * create Default Datasource for in-memory database.
    *
@@ -172,13 +216,10 @@ public final class TaskanaEngineTestConfiguration {
     // ds.setPassword("sa");
     // ds.setUser("sa");
 
-    String jdbcDriver = "org.h2.Driver";
-    String jdbcUrl =
-        "jdbc:h2:mem:taskana;IGNORECASE=TRUE;LOCK_MODE=0;"
-            + "INIT=CREATE SCHEMA IF NOT EXISTS TASKANA\\;"
-            + "SET COLLATION DEFAULT_de_DE ";
-    String dbUserName = "sa";
-    String dbPassword = "sa";
+    String jdbcDriver = "org.testcontainers.jdbc.ContainerDatabaseDriver";
+    String jdbcUrl = "jdbc:tc:postgresql:10:///taskana";
+    String dbUserName = "postgres";
+    String dbPassword = "postgres";
     PooledDataSource ds =
         new PooledDataSource(
             Thread.currentThread().getContextClassLoader(),

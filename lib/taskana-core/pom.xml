@@ -16,6 +16,18 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>1.15.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>db2</artifactId>
+      <version>1.15.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>pro.taskana</groupId>
       <artifactId>taskana-common</artifactId>
       <version>${project.version}</version>
