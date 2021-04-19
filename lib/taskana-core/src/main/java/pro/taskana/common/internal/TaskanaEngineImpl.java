@@ -95,8 +95,6 @@ public class TaskanaEngineImpl implements TaskanaEngine {
     this.sessionManager = createSqlSessionManager();
     initializeDbSchema(taskanaEngineConfiguration);
 
-    historyEventManager = HistoryEventManager.getInstance(this);
-    taskRoutingManager = TaskRoutingManager.getInstance(this);
     createTaskPreprocessorManager = CreateTaskPreprocessorManager.getInstance();
     this.internalTaskanaEngineImpl = new InternalTaskanaEngineImpl();
     workingDaysToDaysConverter =
@@ -106,6 +104,9 @@ public class TaskanaEngineImpl implements TaskanaEngine {
             taskanaEngineConfiguration.getCustomHolidays());
     currentUserContext =
         new CurrentUserContextImpl(TaskanaEngineConfiguration.shouldUseLowerCaseForAccessIds());
+    // IMPORTANT: they have to be initialized last
+    historyEventManager = HistoryEventManager.getInstance(this);
+    taskRoutingManager = TaskRoutingManager.getInstance(this);
   }
 
   public static TaskanaEngine createTaskanaEngine(
