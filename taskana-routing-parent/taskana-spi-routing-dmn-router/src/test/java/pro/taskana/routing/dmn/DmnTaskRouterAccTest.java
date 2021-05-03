@@ -3,11 +3,11 @@ package pro.taskana.routing.dmn;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import acceptance.AbstractAccTest;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import pro.taskana.AbstractAccTest;
 import pro.taskana.common.api.exceptions.InvalidArgumentException;
 import pro.taskana.common.test.security.JaasExtension;
 import pro.taskana.common.test.security.WithAccessId;
@@ -16,7 +16,7 @@ import pro.taskana.task.api.models.ObjectReference;
 import pro.taskana.task.api.models.Task;
 
 @ExtendWith(JaasExtension.class)
-class DmnTaskRouterTest extends AbstractAccTest {
+class DmnTaskRouterAccTest extends AbstractAccTest {
 
   private final TaskService taskService = taskanaEngine.getTaskService();
 
@@ -47,7 +47,7 @@ class DmnTaskRouterTest extends AbstractAccTest {
     ThrowingCallable call = () -> taskService.createTask(taskToRoute);
     assertThatThrownBy(call)
         .isInstanceOf(InvalidArgumentException.class)
-        .extracting(ex -> ex.getMessage())
+        .extracting(Throwable::getMessage)
         .isEqualTo("Cannot create a task outside a workbasket");
   }
 }

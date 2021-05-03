@@ -16,6 +16,7 @@
   </parent>
 
   <dependencies>
+    <!-- all common dependencies -->
     <dependency>
       <groupId>pro.taskana</groupId>
       <artifactId>taskana-common</artifactId>
@@ -26,7 +27,18 @@
       <artifactId>taskana-common-data</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>pro.taskana</groupId>
+      <artifactId>taskana-common-security</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>pro.taskana</groupId>
+      <artifactId>taskana-common-test</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
+    <!-- all lib dependencies -->
     <dependency>
       <groupId>pro.taskana</groupId>
       <artifactId>taskana-core</artifactId>
@@ -43,14 +55,19 @@
       <version>${project.version}</version>
     </dependency>
 
-
+    <!-- all rest dependencies -->
     <dependency>
       <groupId>pro.taskana</groupId>
       <artifactId>taskana-rest-spring</artifactId>
       <version>${project.version}</version>
     </dependency>
 
-
+    <!-- all SPI dependencies -->
+    <dependency>
+      <groupId>pro.taskana</groupId>
+      <artifactId>taskana-spi-routing-dmn-router</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>pro.taskana.history</groupId>
       <artifactId>taskana-simplehistory-provider</artifactId>

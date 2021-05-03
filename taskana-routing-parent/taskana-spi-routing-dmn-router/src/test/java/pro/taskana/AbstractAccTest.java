@@ -1,9 +1,8 @@
-package acceptance;
+package pro.taskana;
 
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeAll;
 
-import pro.taskana.TaskanaEngineConfiguration;
 import pro.taskana.common.api.TaskanaEngine;
 import pro.taskana.common.api.TaskanaEngine.ConnectionManagementMode;
 import pro.taskana.common.api.WorkingDaysToDaysConverter;
