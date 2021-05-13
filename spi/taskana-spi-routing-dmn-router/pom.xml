@@ -9,7 +9,7 @@
   <description>TaskRouter implementation using dmn tables.</description>
 
   <parent>
-    <artifactId>taskana-routing-parent</artifactId>
+    <artifactId>taskana-spi-parent</artifactId>
     <groupId>pro.taskana</groupId>
     <version>4.6.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>

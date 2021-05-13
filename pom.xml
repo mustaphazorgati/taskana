@@ -18,7 +18,7 @@
     <!-- History is an optional module. -->
     <module>history</module>
     <module>ci/taskana-sonar-test-coverage</module>
-    <module>taskana-routing-parent</module>
+    <module>spi</module>
   </modules>
 
   <properties>
