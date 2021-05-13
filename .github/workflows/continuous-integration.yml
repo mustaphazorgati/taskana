@@ -72,158 +72,10 @@ jobs:
         if: failure()
         uses: andymckay/cancel-action@0.2
 
-  compile_frontend:
-    name: Compile taskana-web
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v2.3.4
-      - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v2
-        with:
-          distribution: adopt
-          java-version: ${{ env.JAVA_VERSION }}
-      - name: Use Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v2.1.5
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - name: Cache web dependencies
-        id: web-cache
-        uses: actions/cache@v2.1.5
-        with:
-          path: web/node_modules
-          key: ${{ runner.OS }}-${{ env.CACHE_WEB_NAME }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: ${{ runner.OS }}-${{ env.CACHE_WEB_NAME }}
-      - name: Cache maven dependencies (for web)
-        uses: actions/cache@v2.1.5
-        with:
-          path: ~/.m2
-          key: ${{ runner.OS }}-${{ env.CACHE_MAVEN_FOR_WEB_NAME }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.OS }}-${{ env.CACHE_MAVEN_FOR_WEB_NAME }}
-      - name: Install Dependencies
-        if: steps.web-cache.outputs.cache-hit != 'true'
-        working-directory: web
-        run: npm ci
-      # currently this is not working because the angular-tree-component needs core-js ^2.4.1 and we have 3.X.X
-      #- name: Verify Dependencies
-      #working-directory: web
-      #run: npm ls
-      - name: Compile & build
-        working-directory: web
-        run: |
-          npm run lint
-          npm run build:prod
-      - name: Build maven artifact
-        run: ./mvnw -B install -pl :taskana-web -am
-      - name: Upload taskana-web artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ env.ARTIFACTS_TASKANA_WEB_NAME }}
-          path: ${{ env.ARTIFACTS_TASKANA_WEB_PATH }}
-          if-no-files-found: error
-      - name: Remove taskana artifacts from cache
-        run: rm -rf ~/.m2/repository/pro/taskana
-      - name: Cancel workflow
-        if: failure()
-        uses: andymckay/cancel-action@0.2
-
-  compile_taskana-rest-spring-example-wildfly:
-    name: Compile taskana-rest-spring-example-wildfly
-    needs: compile_backend
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v2.3.4
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
-        with:
-          distribution: adopt
-          java-version: 8
-      - name: Cache maven dependencies
-        uses: actions/cache@v2.1.5
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-${{ env.CACHE_MAVEN_NAME }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-${{ env.CACHE_MAVEN_NAME }}
-      - name: Download taskana artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ env.ARTIFACTS_TASKANA_JARS_NAME }}
-          path: ${{ env.ARTIFACTS_TASKANA_JARS_PATH }}
-      - name: Compile
-        run: ./mvnw -B test-compile -f rest/taskana-rest-spring-example-wildfly -DskipTests -Djacoco.skip
-      - name: Cancel workflow
-        if: failure()
-        uses: andymckay/cancel-action@0.2
-
-  test_frontend:
-    runs-on: ubuntu-20.04
-    name: Test taskana-web
-    needs: [ compile_frontend, compile_backend ]
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v2.3.4
-      - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v2
-        with:
-          distribution: adopt
-          java-version: ${{ env.JAVA_VERSION }}
-      - name: Use Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v2.1.5
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - name: Cache web dependencies
-        id: web-cache
-        uses: actions/cache@v2.1.5
-        with:
-          path: web/node_modules
-          key: ${{ runner.OS }}-${{ env.CACHE_WEB_NAME }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: ${{ runner.OS }}-${{ env.CACHE_WEB_NAME }}
-      # Theoretically this is not necessary because we reuse the cache from the 'compile_frontend' job.
-      # Sometimes the cache is not created, therefore this is a fallback.
-      - name: Install Dependencies
-        if: steps.web-cache.outputs.cache-hit != 'true'
-        working-directory: web
-        run: npm ci
-      - name: Cache maven dependencies
-        uses: actions/cache@v2.1.5
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-${{ env.CACHE_MAVEN_NAME }}-${{ hashFiles('**/pom.xml') }}
-      - name: Download taskana artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ env.ARTIFACTS_TASKANA_JARS_NAME }}
-          path: ${{ env.ARTIFACTS_TASKANA_JARS_PATH }}
-      - name: Download taskana-web artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ env.ARTIFACTS_TASKANA_WEB_NAME }}
-          path: ${{ env.ARTIFACTS_TASKANA_WEB_PATH }}
-      - name: Build frontend
-        run: ./mvnw install -pl :taskana-web
-      - name: Test
-        working-directory: web
-        run: npm run test -- --coverageReporters text-summary
-      - name: Cypress tests
-        working-directory: web
-        run: |
-          ../mvnw -B spring-boot:run -P history.plugin -f .. -pl :taskana-rest-spring-example-boot &
-          npx wait-port -t 30000 localhost:8080 && npm run e2e-standalone
-      - name: Upload Cypress tests
-        if: failure()
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ env.ARTIFACTS_CYPRESS_TESTS_NAME }}
-          path: ${{ env.ARTIFACTS_CYPRESS_TESTS_PATH }}
-      - name: Cancel workflow
-        if: failure()
-        uses: andymckay/cancel-action@0.2
-
   test_backend:
     runs-on: ubuntu-20.04
     name: Test ${{ matrix.module }} on ${{ matrix.database }}
-    needs: [ compile_taskana-rest-spring-example-wildfly ]
+    needs: [ compile_backend ]
     strategy:
       matrix:
         module:
@@ -234,6 +86,7 @@ jobs:
           - taskana-core
           - taskana-cdi
           - taskana-cdi-example
+          - taskana-spi-routing-dmn-router
           - taskana-spring
           - taskana-spring-example
           - taskana-rest-spring
@@ -287,44 +140,11 @@ jobs:
         if: failure()
         uses: andymckay/cancel-action@0.2
 
-  # As soon as we can upgrade the JDK to 11 we can add wildfly to the test matrix
-  test_taskana-rest-spring-example-wildfly:
-    runs-on: ubuntu-20.04
-    name: Test taskana-rest-spring-example-wildfly on POSTGRES_10
-    needs: [ compile_taskana-rest-spring-example-wildfly ]
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v2.3.4
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
-        with:
-          distribution: adopt
-          java-version: 8
-      - name: Cache maven dependencies
-        uses: actions/cache@v2.1.5
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-${{ env.CACHE_MAVEN_NAME }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-${{ env.CACHE_MAVEN_NAME }}
-      - name: Download taskana artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ env.ARTIFACTS_TASKANA_JARS_NAME }}
-          path: ${{ env.ARTIFACTS_TASKANA_JARS_PATH }}
-      - name: Start database
-        run: docker-databases/prepare_db.sh POSTGRES_10
-      - name: Test
-        run: ./mvnw -B verify -f rest/taskana-rest-spring-example-wildfly
-      - name: Cancel workflow
-        if: failure()
-        uses: andymckay/cancel-action@0.2
-
-
   release_artifacts:
     runs-on: ubuntu-20.04
     name: Release artifacts to OSS Sonatype
-    if: github.repository == 'Taskana/taskana' && ( startsWith(github.ref, 'refs/tags') || github.ref == 'refs/heads/master' ) && github.head_ref == ''
-    needs: [ test_frontend, test_backend, test_taskana-rest-spring-example-wildfly ]
+    if: github.repository == 'mustaphazorgati/taskana' && ( startsWith(github.ref, 'refs/tags') || github.ref == 'refs/heads/master' ) && github.head_ref == ''
+    needs: [test_backend]
     # as documented in the gpg manual (https://www.gnupg.org/documentation/manuals/gnupg/Invoking-GPG_002dAGENT.html)
     # we should execute this command before interacting with gpg (otherwise gpg won't work)
     env:
@@ -334,11 +154,6 @@ jobs:
         uses: actions/checkout@v2.3.4
         with:
           fetch-depth: 0 # necessary for push back
-          # NOTE @v2 uses the token as an auth http header. Set it to
-          # a Personal Access Token instead of secrets.GITHUB_TOKEN
-          # so that tag pushes trigger repo push events.
-          # source: https://github.community/t/action-does-not-trigger-another-on-push-tag-action/17148/7
-          token: ${{ secrets.ADMIN_PERSONAL_ACCESS_TOKEN }}
       - name: Set up JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v2
         with:
@@ -350,11 +165,6 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-${{ env.CACHE_MAVEN_NAME }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-${{ env.CACHE_MAVEN_NAME }}
-      - name: Download taskana-web artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ env.ARTIFACTS_TASKANA_WEB_NAME }}
-          path: ${{ env.ARTIFACTS_TASKANA_WEB_PATH }}
       - name: Import GPG Key
         run: echo -n "$GPG_KEY" | base64 --decode | gpg --batch --import
         env:
@@ -365,123 +175,12 @@ jobs:
         run: |
           ./mvnw -B deploy -P $([[ "$GITHUB_REF" =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]] && echo "release" || echo "snapshot") \
           --settings ci/mvnsettings.xml -DskipTests -Dcheckstyle.skip -Dasciidoctor.skip -Djacoco.skip \
-          -pl :taskana-parent,\
-          :taskana-common-parent,:taskana-common,:taskana-common-security,:taskana-common-data,:taskana-common-test,\
-          :taskana-lib-parent,:taskana-core,:taskana-cdi,:taskana-spring,\
-          :taskana-rest-parent,:taskana-web,:taskana-rest-spring,\
-          :taskana-history-parent,:taskana-simplehistory-provider,:taskana-simplehistory-rest-spring,:taskana-loghistory-provider
+          -pl :taskana-spi-parent,:taskana-spi-routing-dmn-router
         env:
           GPG_KEY_NAME: ${{ secrets.GPG_KEY_NAME }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           OSSRH_JIRA_USERNAME: ${{ secrets.OSSRH_JIRA_USERNAME }}
           OSSRH_JIRA_PASSWORD: ${{ secrets.OSSRH_JIRA_PASSWORD }}
-      - name: Update version to next snapshot and push back
-        run: |
-          ci/change_version.sh -i -m .
-          ci/update_taskana_dependency_for_wildfly.sh
-          ci/commitPoms.sh
-        env:
-          GH_EMAIL: ${{ secrets.GH_EMAIL }}
-          GH_USERNAME: ${{ secrets.GH_USERNAME }}
-      - name: Cancel workflow
-        if: failure()
-        uses: andymckay/cancel-action@0.2
-
-  deploy_to_bluemix:
-    runs-on: ubuntu-20.04
-    name: Deploy demo app to IBM Cloud Foundry
-    if: github.repository == 'Taskana/taskana' && github.ref == 'refs/heads/master' && github.head_ref == ''
-    needs: [ test_frontend, test_backend, test_taskana-rest-spring-example-wildfly ]
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v2.3.4
-      - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v2
-        with:
-          distribution: adopt
-          java-version: ${{ env.JAVA_VERSION }}
-      - name: Cache maven dependencies
-        uses: actions/cache@v2.1.5
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-${{ env.CACHE_MAVEN_NAME }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-${{ env.CACHE_MAVEN_NAME }}
-      - name: Download taskana artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ env.ARTIFACTS_TASKANA_JARS_NAME }}
-          path: ${{ env.ARTIFACTS_TASKANA_JARS_PATH }}
-      - name: Download taskana-web artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ env.ARTIFACTS_TASKANA_WEB_NAME }}
-          path: ${{ env.ARTIFACTS_TASKANA_WEB_PATH }}
-      - name: Build taskana-web
-        run: ./mvnw -B install -pl :taskana-web
-      - name: Generate Javadoc
-        run: ./mvnw -B clean javadoc:jar -pl :taskana-core,:taskana-cdi,:taskana-spring
-      - name: Generate Rest Documentation
-        run: ./mvnw -B test asciidoctor:process-asciidoc -Dtest=*DocTest -pl :taskana-rest-spring,:taskana-simplehistory-rest-spring -Dcheckstyle.skip -Djacoco.skip
-      - name: Build Example Application
-        run: ./mvnw -B install -P history.plugin -pl :taskana-rest-spring-example-boot -DskipTests -Dcheckstyle.skip -Dmaven.javadoc.skip -Djacoco.skip
-      - name: Verify Example Application contains documentation
-        run: ci/verify_docs_jar.sh
-      - name: Deploy to IBM Cloud Foundry
-        uses: IBM/cloudfoundry-deploy@v2.0
-        with:
-          IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
-          IBM_CLOUD_CF_API: ${{ secrets.IBM_CLOUD_CF_API }}
-          IBM_CLOUD_CF_ORG: ${{ secrets.IBM_CLOUD_CF_ORG }}
-          IBM_CLOUD_CF_SPACE: ${{ secrets.IBM_CLOUD_CF_SPACE }}
-          RESOURCE_GROUP: default
-          APP_MANIFEST_FILE: ci/ibm_cf_manifest.yml
-      - name: Smoke test documentation
-        run: ci/verify_docs_alive.sh
-      - name: Cancel workflow
-        if: failure()
-        uses: andymckay/cancel-action@0.2
-
-  upload_to_sonar:
-    runs-on: ubuntu-20.04
-    name: Upload SonarQube analysis to sonarcloud
-    # no pull request and not on release
-    if: github.head_ref == '' && !startsWith(github.ref, 'refs/tags')
-    needs: [ test_frontend, test_backend, test_taskana-rest-spring-example-wildfly ]
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v2.3.4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v2
-        with:
-          distribution: adopt
-          java-version: ${{ env.JAVA_VERSION }}
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v2.1.5
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-${{ env.CACHE_SONAR_NAME }}
-          restore-keys: ${{ runner.os }}-${{ env.CACHE_SONAR_NAME }}
-      - name: Cache maven dependencies
-        uses: actions/cache@v2.1.5
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-${{ env.CACHE_MAVEN_NAME }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-${{ env.CACHE_MAVEN_NAME }}
-      - name: Download JaCoCo reports
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ env.ARTIFACTS_JACOCO_REPORTS_NAME }}
-      - name: Install taskana
-        run: ./mvnw -B install -DskipTests -Dcheckstyle.skip -Dasciidoctor.skip -Dmaven.javadoc.skip
-      - name: Upload SonarQube analysis
-        run: ./mvnw -B sonar:sonar
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
-          SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
       - name: Cancel workflow
         if: failure()
         uses: andymckay/cancel-action@0.2
