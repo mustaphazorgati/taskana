@@ -63,7 +63,7 @@ public class WorkbasketQueryImpl implements WorkbasketQuery {
   private String[] orgLevel3Like;
   private String[] orgLevel4In;
   private String[] orgLevel4Like;
-  private int markedForDeletion;
+  private Boolean markedForDeletion;
 
   private InternalTaskanaEngine taskanaEngine;
   private List<String> orderBy;
@@ -349,11 +349,7 @@ public class WorkbasketQueryImpl implements WorkbasketQuery {
 
   @Override
   public WorkbasketQuery markedForDeletion(boolean markedForDeletion) {
-    if (markedForDeletion == true) {
-      this.markedForDeletion = 1;
-    } else {
-      this.markedForDeletion = 0;
-    }
+    this.markedForDeletion = markedForDeletion;
     return this;
   }
 
@@ -548,7 +544,7 @@ public class WorkbasketQueryImpl implements WorkbasketQuery {
     return orgLevel4Like;
   }
 
-  public int isMarkedForDeletion() {
+  public Boolean isMarkedForDeletion() {
     return markedForDeletion;
   }
 
