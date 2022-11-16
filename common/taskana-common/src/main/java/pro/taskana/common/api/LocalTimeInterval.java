@@ -1,35 +1,43 @@
 package pro.taskana.common.api;
 
 import java.time.LocalTime;
+import java.util.Objects;
 
-public class LocalTimeInterval {
+/**
+ * LocalTimeInterval provides a closed interval using {@link LocalTime}.
+ *
+ * <p>That means both begin and end must not be <code>null</code>.
+ *
+ * <p>Note: this class has a natural ordering that is inconsistent with equals.
+ */
+public class LocalTimeInterval implements Comparable<LocalTimeInterval> {
 
-  private LocalTime begin;
-  private LocalTime end;
+  private final LocalTime begin;
+  private final LocalTime end;
 
   public LocalTimeInterval(LocalTime begin, LocalTime end) {
-    this.begin = begin;
-    this.end = end;
-  }
-
-  public boolean isValid() {
-    return begin != null && end != null;
+    this.begin = Objects.requireNonNull(begin);
+    this.end = Objects.requireNonNull(end);
   }
 
   public LocalTime getBegin() {
     return begin;
   }
 
-  public void setBegin(LocalTime begin) {
-    this.begin = begin;
-  }
-
   public LocalTime getEnd() {
     return end;
   }
 
-  public void setEnd(LocalTime end) {
-    this.end = end;
+  /**
+   * Compares two LocalTimeInterval objects in regard to their {@link #getBegin() begin}.
+   *
+   * @param o the LocalTimeInterval to be compared.
+   * @return a negative value if <code>o</code> begins before <code>this</code>, 0 if both have the
+   *     same begin and a positive value if <code>o</code> begins after <code>this</code>.
+   */
+  @Override
+  public int compareTo(LocalTimeInterval o) {
+    return begin.compareTo(o.getBegin());
   }
 
   @Override

@@ -1,13 +1,9 @@
-package pro.taskana.common.api;
+package pro.taskana.common.internal.workingtime;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
 import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,7 +12,7 @@ import java.util.Set;
 import java.util.stream.LongStream;
 import java.util.stream.LongStream.Builder;
 
-import pro.taskana.common.api.exceptions.SystemException;
+import pro.taskana.common.api.CustomHoliday;
 
 /**
  * The WorkingDaysToDaysConverter provides a method to convert an age in working days into an age in
@@ -67,26 +63,8 @@ public class WorkingDaysToDaysConverter {
     easterCalculator = new EasterCalculator();
   }
 
-  public Instant addWorkingDaysToInstant(Instant instant, Duration workingDays) {
-    long days = convertWorkingDaysToDays(instant, workingDays.toDays(), ZeroDirection.ADD_DAYS);
-    return instant.plus(Duration.ofDays(days));
-  }
-
-  public Instant subtractWorkingDaysFromInstant(Instant instant, Duration workingDays) {
-    long days = convertWorkingDaysToDays(instant, -workingDays.toDays(), ZeroDirection.SUB_DAYS);
-    return instant.plus(Duration.ofDays(days));
-  }
-
-  // counts working days between two dates, exclusive for both margins.
-  public boolean hasWorkingDaysInBetween(Instant left, Instant right) {
-    long days = Duration.between(left, right).abs().toDays();
-    Instant firstInstant = left.isBefore(right) ? left : right;
-    return LongStream.range(1, days).anyMatch(day -> isWorkingDay(firstInstant.plus(day, DAYS)));
-  }
-
-  public boolean isWorkingDay(Instant referenceDate) {
-    LocalDate dateToCheck = LocalDateTime.ofInstant(referenceDate, ZoneOffset.UTC).toLocalDate();
-    return !isWeekend(dateToCheck) && !isHoliday(dateToCheck);
+  public boolean isWorkingDay(LocalDate referenceDate) {
+    return !isWeekend(referenceDate) && !isHoliday(referenceDate);
   }
 
   public boolean isWeekend(LocalDate dateToCheck) {
@@ -125,29 +103,6 @@ public class WorkingDaysToDaysConverter {
     return builder.build().anyMatch(c -> c == diffFromEasterSunday);
   }
 
-  private long convertWorkingDaysToDays(
-      final Instant startTime, long numberOfDays, ZeroDirection zeroDirection) {
-    if (startTime == null) {
-      throw new SystemException(
-          "Internal Error: convertWorkingDaysToDays was called with a null startTime");
-    }
-    int direction = calculateDirection(numberOfDays, zeroDirection);
-    long limit = Math.abs(numberOfDays);
-    return LongStream.iterate(0, i -> i + direction)
-        .filter(day -> isWorkingDay(startTime.plus(day, DAYS)))
-        .skip(limit)
-        .findFirst()
-        .orElse(0);
-  }
-
-  private int calculateDirection(long numberOfDays, ZeroDirection zeroDirection) {
-    if (numberOfDays == 0) {
-      return zeroDirection.getDirection();
-    } else {
-      return numberOfDays >= 0 ? 1 : -1;
-    }
-  }
-
   @Override
   public String toString() {
     return "WorkingDaysToDaysConverter [germanHolidaysEnabled="
@@ -161,22 +116,8 @@ public class WorkingDaysToDaysConverter {
         + "]";
   }
 
-  private enum ZeroDirection {
-    SUB_DAYS(-1),
-    ADD_DAYS(1);
-
-    private final int direction;
-
-    ZeroDirection(int direction) {
-      this.direction = direction;
-    }
-
-    public int getDirection() {
-      return direction;
-    }
-  }
-
   static class EasterCalculator {
+
     LocalDate cachedEasterDay;
 
     /**
